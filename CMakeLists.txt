@@ -6,7 +6,7 @@ include(CTest)
 enable_testing()
 
 add_subdirectory(lib)
-add_executable(av-data-distributer main.cpp)
+add_executable(av-data-distributer src/main.cpp)
 target_link_libraries(av-data-distributer uWebSockets)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
