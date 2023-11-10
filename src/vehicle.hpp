@@ -16,6 +16,8 @@ class Vehicle
         Z = 0x3
     };
 
+    int tick(time_t);
+    
     int setPosition(double, double, double, time_t);
     int setOrientation(double, double, double, time_t);
     int setVelocity(double, double, double, time_t);
@@ -24,11 +26,13 @@ class Vehicle
     int setAngularAcceleration(double, double, double, time_t);
     
     private:
-    double _position[3];                // latitude, longitude, altitude
-    double _orientation[3];             // radians
-    double _velocity[3];                // meters / second
-    double _rotation[3];                // radians / second
-    double _acceleration[3];            // meters per square second
-    double _angular_acceleration[3];    // radians per square second
+    double _position[3] = {0.0,0.0,0.0};             // latitude, longitude, altitude
+    double _orientation[3] = {0.0,0.0,0.0};          // radians
+    double _velocity[3] = {0.0,0.0,0.0};             // meters / second
+    double _rotation[3] = {0.0,0.0,0.0};             // radians / second
+    double _acceleration[3] = {0.0,0.0,0.0};         // meters per square second
+    double _angular_acceleration[3] = {0.0,0.0,0.0}; // radians per square second
+    double _distance = 0.0;
+
     time_t _recent_update;
 };

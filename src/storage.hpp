@@ -1,10 +1,18 @@
 #pragma once
 
+#include <vector>
+#include "vehicle.hpp"
+
 class Storage
 {
 private:
-    /* data */
+    std::vector<Vehicle> _nodes;
+
 public:
     Storage(/* args */);
     ~Storage();
+
+    int cleanup(double);  //maximal accepted distance
+    int put(Vehicle);
+    Vehicle& get(__uint128_t);
 };
