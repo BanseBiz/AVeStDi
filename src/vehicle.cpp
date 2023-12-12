@@ -84,3 +84,41 @@ std::array<double,3> Vehicle::getAngularAcceleration() {
     std::array<double,3> rot_acc = {_angular_acceleration[YAW], _angular_acceleration[PITCH], _angular_acceleration[ROLL]};
     return rot_acc;
 }
+
+int Vehicle::tick(time_t now) {
+    time_t elapsed_time[6] = {0};
+    unsigned int mode = POS; // POS is 0
+    for (unsigned int i = 5; i >= 0; --i) {
+        elapsed_time[i] = now - _recent_update[i];
+        if (elapsed_time[i] < elapsed_time[mode]) {
+            mode = i; //recent datum
+        }
+    }
+    for (unsigned int i = 0; i < 6; ++i) {
+        if (elapsed_time[i] != 0) {
+            switch (i) {
+                case POS: {
+                    //
+                    break;
+                }
+                case ORI: {
+                    break;
+                }
+                case VEL: {
+                    break;
+                }
+                case ROT: {
+                    break;
+                }
+                case ACC: {
+                    break;
+                }
+                case ANG: {
+                    break;
+                }
+            }
+        }
+    }
+
+    return 0;
+}

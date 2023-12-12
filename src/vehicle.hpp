@@ -2,25 +2,11 @@
 
 #include <time.h>
 #include <array>
+#include "movement.hpp"
 
 class Vehicle
 {
     public:
-    enum posIdx_t {
-        LAT = 0x0,
-        LON = 0x1,
-        ALT = 0x2
-    };
-    enum orientIdx_t {
-        YAW = 0x0,
-        PITCH = 0x1,
-        ROLL = 0x2
-    };
-    enum dirIdx_t {
-        X = 0x0,
-        Y = 0x1,
-        Z = 0x2
-    };
 
     int tick(time_t);
     
