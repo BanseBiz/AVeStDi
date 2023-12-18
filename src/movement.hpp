@@ -26,12 +26,15 @@ enum typeIdx_t {
     ANG = 0x5
 };
 
-std::array<double,3> calcPOStoVEL(std::array<double,3>,time_t);
-std::array<double,3> calcVELtoPOS(std::array<double,3>,time_t);
-std::array<double,3> calcVELtoACC(std::array<double,3>,time_t);
-std::array<double,3> calcACCtoVEL(std::array<double,3>,time_t);
+/* */
+std::array<double,3> calcPOStoVEL(std::array<double,3>,double);
+std::array<double,3> calcVELtoPOS(std::array<double,3>,double);
+std::array<double,3> calcVELtoACC(std::array<double,3>,double);
+std::array<double,3> calcACCtoVEL(std::array<double,3>,double);
 
-std::array<double,3> calcORItoROT(std::array<double,3>,time_t);
-std::array<double,3> calcROTtoORI(std::array<double,3>,time_t);
-std::array<double,3> calcROTtoANG(std::array<double,3>,time_t);
-std::array<double,3> calcANGtoROT(std::array<double,3>,time_t);
+std::array<double,3> calcORItoROT(std::array<double,3>,double);
+std::array<double,3> calcROTtoORI(std::array<double,3>,double);
+std::array<double,3> calcROTtoANG(std::array<double,3>,double);
+std::array<double,3> calcANGtoROT(std::array<double,3>,double);
+
+std::array<double,3>& operator*=(std::array<double,3>&, const double);
