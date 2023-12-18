@@ -38,3 +38,11 @@ std::array<double,3> calcROTtoANG(std::array<double,3>,double);
 std::array<double,3> calcANGtoROT(std::array<double,3>,double);
 
 std::array<double,3>& operator*=(std::array<double,3>&, const double);
+std::array<double,3> operator*(std::array<double,3>&, const double&);
+std::array<double,3>& operator*=(std::array<double,3>&, const std::array<double,3>&);
+std::array<double,3> operator*(std::array<double,3>&, const std::array<double,3>&);
+
+std::array<double,3>& operator+=(std::array<double,3>&, const std::array<double,3>&);
+std::array<double,3> operator+(std::array<double,3>&, const std::array<double,3>&);
+std::array<double,3>& operator-=(std::array<double,3>&, const std::array<double,3>&);
+std::array<double,3> operator-(std::array<double,3>&, const std::array<double,3>&);
