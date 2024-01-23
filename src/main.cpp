@@ -43,6 +43,8 @@ int main(int, char**) {
                 .close = [](auto */*ws*/, int /*code*/, std::string_view /*message*/) {
 
                 }
+            }).get("/*", [](auto *res, auto * /*req*/) {
+                res->end("Hello world!");
             }).listen(9001, [](auto *listen_socket) {
                 if (listen_socket) {
                     std::cout << "Thread " << std::this_thread::get_id() << " listening on port " << 9001 << std::endl;

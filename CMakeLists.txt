@@ -18,6 +18,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/lib/CMakeLists.txt)
 add_executable(av-data-distributer src/main.cpp src/vehicle.cpp src/movement.cpp)
 target_link_libraries(av-data-distributer uWebSockets ${GeographicLib_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES})
 
+add_executable(av-data-client src/client.cpp src/vehicle.cpp src/movement.cpp)
+target_link_libraries(av-data-client uWebSockets ${GeographicLib_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES})
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
