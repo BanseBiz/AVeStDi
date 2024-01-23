@@ -1,6 +1,3 @@
-#add_subdirectory(uSockets)
-#add_subdirectory(uWebSockets)
-
 # Build Release on third-party libs
 set(CMAKE_BUILD_TYPE Release)
 
@@ -10,8 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(USOCKETS_DIR uWebSockets/uSockets/src)
-set(UWEBSOCKETS_DIR uWebSockets/src)
+set(USOCKETS_DIR lib/uWebSockets/uSockets/src)
+set(UWEBSOCKETS_DIR lib/uWebSockets/src)
 
 add_library(
   uSockets STATIC
