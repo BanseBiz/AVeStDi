@@ -2,6 +2,8 @@
 #include "App.h"
 #include <thread>
 #include <algorithm>
+#include <libusockets.h>
+
 
 int main(int, char**) {
     std::cout << "Hello, from av-data-distributer!\n";
