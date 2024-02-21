@@ -2,27 +2,24 @@
 // https://www.geeksforgeeks.org/socket-programming-in-cc-handling-multiple-clients-on-server-without-multi-threading/
 //Example code: A simple server side code, which echos back the received message. 
 //Handle multiple socket connections with select and fd_set on Linux  
-#include <stdio.h>  
-#include <string.h>   //strlen  
-#include <stdlib.h>  
-#include <errno.h>  
-#include <unistd.h>   //close  
-#include <arpa/inet.h>    //close  
-#include <sys/types.h>  
-#include <sys/socket.h>  
-#include <netinet/in.h>  
+#include <stdio.h>
+#include <string.h>   //strlen
+#include <stdlib.h>
+#include <errno.h>
+#include <unistd.h>   //close
+#include <netinet/in.h>
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros  
+#include <arpa/inet.h>    //close
 
 #include "tcpSocket.h"
-
-#define TRUE 1
-#define FALSE 0
-#define PORT 8888
 
 TcpSocket::TcpSocket(
     unsigned int port,
     char* helo
-) : 
+) : _port(port), _helo(helo) 
+{
+
+};
      
 int TcpSocket::init() {
     //initialise all client_socket[] to 0 so not checked  
@@ -31,7 +28,8 @@ int TcpSocket::init() {
     }
 
     //create a master socket  
-    if((_master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0) { 
+    _master_socket = socket(AF_INET , SOCK_STREAM , 0);
+    if(_master_socket == 0) { 
         perror("socket failed");
         return 1;
     }
@@ -47,14 +45,14 @@ int TcpSocket::init() {
     //type of socket created
     _address.sin_family = AF_INET;
     _address.sin_addr.s_addr = INADDR_ANY;
-    _address.sin_port = htons( PORT );
+    _address.sin_port = htons( _port );
 
     //bind the socket to localhost port 8888  
     if (bind(_master_socket, (struct sockaddr *)&_address, sizeof(_address)) < 0) {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
-    printf("Listener on port %d \n", PORT);
+    printf("Listener on port %d \n", _port);
 
     //try to specify maximum of 3 pending connections for the master socket
     if (listen(_master_socket, TCPSOCKET_MAXPENDINGCONNECTIONS) < 0) {   
@@ -65,6 +63,7 @@ int TcpSocket::init() {
     //accept the incoming connection  
     _addrlen = sizeof(_address);
     puts("Waiting for connections ...");
+    return 0;
 }
 
 int TcpSocket::spin() {
@@ -91,7 +90,7 @@ int TcpSocket::spin() {
 
     //wait for an activity on one of the sockets , timeout is NULL ,  
     //so wait indefinitely      
-    if (select(max_sd + 1 , &readfds , NULL , NULL , NULL) && (errno != EINTR)) {   
+    if ((select(max_sd + 1 , &readfds , NULL , NULL , NULL) < 0) && (errno != EINTR)) {   
         printf("select error");
     }
 
@@ -134,7 +133,7 @@ int TcpSocket::spin() {
             size_t msgsize;
             //Check if it was for closing , and also read the
             //incoming message
-            if ((msgsize = read(sd , _buffer, TCPSOCKET_BUFFERSIZE)) == 0) {
+            if ((msgsize = read(sd , _recv_buffer, TCPSOCKET_RECVBUFFERSIZE)) == 0) {
                 //Somebody disconnected , get his details and print
                 getpeername(sd, (struct sockaddr*)&_address, (socklen_t*)&_addrlen);   
                 printf("Host disconnected , ip %s , port %d \n" ,
@@ -146,10 +145,38 @@ int TcpSocket::spin() {
             } else {
                 //set the string terminating NULL byte on the end
                 //of the data read
-                _buffer[msgsize] = '\0';
-                send(sd, _buffer, strlen(_buffer), 0);
+                _recv_buffer[msgsize] = '\0';
+                if (msgsize < 4) {
+                    send(sd, _error_cmd_unknown, strlen(_error_cmd_unknown), 0);
+                    close(sd);
+                    _client_socket[i] = 0;
+                }
+                int cmd_rslt = handleCmd(msgsize);
+                if (cmd_rslt < 0) { // unknown command -> close connection
+                    send(sd, _error_cmd_unknown, strlen(_error_cmd_unknown), 0);
+                    close(sd);
+                    _client_socket[i] = 0;
+                }
+                send(sd, _send_buffer, cmd_rslt, 0);
             }
         }
     }
     return 0;
+}
+
+int TcpSocket::addCmd(std::string cmd, action_t action) {
+    _cmd_map[cmd] = action;
+    return 0;
+}
+
+int TcpSocket::handleCmd(size_t msgsize) {
+    std::string msg(_recv_buffer);
+    std::string cmd = msg.substr(0, 4);
+
+    std::map<std::string,action_t>::iterator it = _cmd_map.find(cmd);
+    if (it == _cmd_map.end()) {
+        return -1;
+    }
+
+    return _cmd_map[cmd](&_recv_buffer[5],_send_buffer);
 }
