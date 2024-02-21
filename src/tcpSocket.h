@@ -32,7 +32,7 @@ class TcpSocket
     const unsigned int _port;
     const char *_helo;
 
-    const char _error_cmd_unknown[24] = "EXIT: COMMAND UNKNOWN\r\n";
+    const char _error_cmd_unknown[24] = "EXIT command unknown\r\n";
 
     int _client_socket[TCPSOCKET_MAXCLIENTS];
     int _master_socket;

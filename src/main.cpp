@@ -11,6 +11,12 @@ int vers(char* recv, char* send) {
     return 14;
 }
 
+int quit(char* recv, char* send) {
+    const char msg[] = "EXIT bye\r\n";
+    std::memcpy(send, msg, 11);
+    return -2;
+}
+
 int echo(char* recv, char* send) {
     size_t msg_len = strlen(recv);
     std::memcpy(send,recv,msg_len);
@@ -22,6 +28,7 @@ int main(int argc , char *argv[]) {
     TcpSocket tsck(PORT, helo_msg);
     tsck.init();
     tsck.addCmd("VERS", vers);
+    tsck.addCmd("QUIT", quit);
     tsck.addCmd("ECHO", echo);
     while(1) {
         tsck.spin();

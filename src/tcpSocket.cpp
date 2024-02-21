@@ -136,7 +136,7 @@ int TcpSocket::spin() {
             if ((msgsize = read(sd , _recv_buffer, TCPSOCKET_RECVBUFFERSIZE)) == 0) {
                 //Somebody disconnected , get his details and print
                 getpeername(sd, (struct sockaddr*)&_address, (socklen_t*)&_addrlen);   
-                printf("Host disconnected , ip %s , port %d \n" ,
+                printf("Client disconnected , ip %s , port %d \n" ,
                         inet_ntoa(_address.sin_addr) , ntohs(_address.sin_port));
                 
                 //Close the socket and mark as 0 in list for reuse  
@@ -148,12 +148,25 @@ int TcpSocket::spin() {
                 _recv_buffer[msgsize] = '\0';
                 if (msgsize < 4) {
                     send(sd, _error_cmd_unknown, strlen(_error_cmd_unknown), 0);
+                    getpeername(sd, (struct sockaddr*)&_address, (socklen_t*)&_addrlen);   
+                    printf("Quit connection, err: cmd missing , ip %s , port %d \n" ,
+                            inet_ntoa(_address.sin_addr) , ntohs(_address.sin_port));
                     close(sd);
                     _client_socket[i] = 0;
                 }
                 int cmd_rslt = handleCmd(msgsize);
+                // < 0 means to close connection after response
                 if (cmd_rslt < 0) { // unknown command -> close connection
-                    send(sd, _error_cmd_unknown, strlen(_error_cmd_unknown), 0);
+                    getpeername(sd, (struct sockaddr*)&_address, (socklen_t*)&_addrlen);  
+                    if (cmd_rslt == -1) {
+                        send(sd, _error_cmd_unknown, strlen(_error_cmd_unknown), 0);
+                        printf("Quit connection, err: cmd unknown , ip %s , port %d \n" ,
+                        inet_ntoa(_address.sin_addr) , ntohs(_address.sin_port));
+                    } else {
+                        send(sd, _send_buffer, strlen(_send_buffer), 0);
+                        printf("Quit connection, client said goodbye , ip %s , port %d \n" ,
+                            inet_ntoa(_address.sin_addr) , ntohs(_address.sin_port));
+                    }
                     close(sd);
                     _client_socket[i] = 0;
                 }
