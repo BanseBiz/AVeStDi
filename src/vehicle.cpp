@@ -1,6 +1,14 @@
 #include "vehicle.hpp"
 #include <GeographicLib/Geodesic.hpp>
 
+Vehicle::Vehicle() {
+
+};
+
+Vehicle::Vehicle(double lat, double lon, double alt, time_t timestamp) {
+    setPosition(lat, lon, alt, timestamp);
+};
+
 int Vehicle::setPosition(double lat, double lon, double alt, time_t timestamp) {
     if (timestamp < _recent_update[0]) return 1;
     _recent_update[0] = timestamp;

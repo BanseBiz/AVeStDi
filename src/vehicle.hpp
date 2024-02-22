@@ -7,7 +7,8 @@
 class Vehicle
 {
     public:
-
+    Vehicle();
+    Vehicle(double, double, double, time_t);
     int tick(time_t);
     
     int setPosition(double, double, double, time_t);
