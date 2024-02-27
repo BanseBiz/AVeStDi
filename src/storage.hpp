@@ -2,17 +2,18 @@
 
 #include "vehicle.hpp"
 #include <map>
+#include <boost/uuid/uuid.hpp>
 
 class Storage
 {
 private:
-    std::map<__uint128_t,Vehicle> _nodes;
+    std::map<boost::uuids::uuid,Vehicle> _nodes;
 
 public:
     Storage(/* args */);
 
 //    int cleanup(double);  //maximal accepted distance
-    int put(__uint128_t, double, double, double, time_t);
-    Vehicle& get(__uint128_t);
-    bool contains(__uint128_t);
+    int put(boost::uuids::uuid, double, double, double, time_t);
+    Vehicle& get(boost::uuids::uuid);
+    bool contains(boost::uuids::uuid);
 };
