@@ -1,11 +1,13 @@
 #include "vehicle.hpp"
 #include <GeographicLib/Geodesic.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 Vehicle::Vehicle() {
 
 };
 
-Vehicle::Vehicle(double lat, double lon, double alt, time_t timestamp) {
+Vehicle::Vehicle(boost::uuids::uuid uuid, double lat, double lon, double alt, time_t timestamp)
+ : _uuid(uuid) {
     setPosition(lat, lon, alt, timestamp);
 };
 
@@ -15,6 +17,13 @@ int Vehicle::setPosition(double lat, double lon, double alt, time_t timestamp) {
     _position[LAT] = lat;
     _position[LON] = lon;
     _position[ALT] = alt;
+    return 0;
+}
+
+int Vehicle::setPosStdDev(double lat, double lon, double alt) {
+    _pos_std_dev[LAT] = lat;
+    _pos_std_dev[LON] = lon;
+    _pos_std_dev[ALT] = alt;
     return 0;
 }
 
@@ -129,4 +138,22 @@ int Vehicle::tick(time_t now) {
     }
 
     return 0;
+}
+
+int Vehicle::toCString(char* out, size_t max) const {
+    const std::string s_uuid = boost::uuids::to_string(_uuid);
+    return snprintf(out, max,
+        "{\"type\":\"ground\","
+        "\"uuid\":\"%s\","
+        "\"timestamp\":\"%lu\","
+        "\"position\":[%.8f,%.8f,%.3f],"
+        "\"std_dev\":[%.2f,%.2f,%.2f],"
+        "\"orientation\":[%.4f,%.4f,%.4f],"
+        "\"velocity\":[%.4f,%.4f,%.4f]}",
+        s_uuid.c_str(), _recent_update,
+        _position[LAT], _position[LON], _position[ALT],
+        _pos_std_dev[LAT], _pos_std_dev[LON], _pos_std_dev[ALT],
+        _orientation[YAW], _orientation[PITCH], _orientation[ROLL],
+        _velocity[X], _velocity[Y], _velocity[Z]
+    );
 }

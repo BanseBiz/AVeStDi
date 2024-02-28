@@ -63,29 +63,43 @@ int push(char* recv, char* send) {
     r_time += j_time.get_value<uint64_t>();
 
     // position
-    boost::property_tree::ptree j_position = pt.get_child("position");
     double position[3];
     unsigned int i = 0;
     for (auto& item : pt.get_child("position"))
         position[i++] = item.second.get_value<double>();
     
+    // position std_dev
+    double pos_std_dev[3];
+    i = 0;
+    for (auto& item : pt.get_child("std_dev"))
+        pos_std_dev[i++] = item.second.get_value<double>();
+    
     // parse json msg
     if (stor.contains(uuid)) {
         Vehicle& av = stor.get(uuid);
         av.setPosition(position[LAT], position[LON], position[ALT], r_time);
+        av.setPosStdDev(pos_std_dev[LAT],pos_std_dev[LON],pos_std_dev[ALT]);
         ret = 13;
         std::memcpy(send, "OK: UPDATE\r\n", ret);
     } else {
         stor.put(uuid, position[LAT], position[LON], position[ALT], r_time);
+        stor.get(uuid).setPosStdDev(pos_std_dev[LAT],pos_std_dev[LON],pos_std_dev[ALT]);
         ret = 10;
         std::memcpy(send, "OK: ADD\r\n", ret);
     }
+    
     return ret;
 }
 
+/* Generate a json-message over vehicles in storage */
 int show(char* recv, char* send) {
-    /* Generate a json-message over vehicles in storage */
-    return -1;
+    size_t buffer_size = TCPSOCKET_SENDBUFFERSIZE;
+    int idx = stor.toCString(send, buffer_size);
+    if (idx > 0 && idx + 2 < buffer_size)
+        std::memcpy(send + idx - 1,"\r\n",3); // (-1) overwrite terminate char
+        return idx + 2;
+    
+    std::memcpy(send, "ERR: send buffer overflow\r\n", 28);
 }
 
 int main(int argc , char *argv[]) {
@@ -96,10 +110,12 @@ int main(int argc , char *argv[]) {
     tsck.addCmd("QUIT", quit);
     tsck.addCmd("ECHO", echo);
     tsck.addCmd("PUSH", push);
+    tsck.addCmd("SHOW", show);
     while(1) {
         tsck.spin();
     }
     return 0;
 }
 
-//"{"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603008","date":"20220227","time":"014307692","position":[53.1217843,8.2033962,8.4],"std_dev":[0.98,1.70,2.10],"velocity":0.055,"course":0.000,"mode":5,"sat_cnt":12}";
+//PUSH {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603009","date":"20220227","time":"014307692","position":[53.1217843,8.2033962,8.4],"std_dev":[0.98,1.70,2.10],"velocity":0.055,"course":0.000,"mode":5,"sat_cnt":12};
+//PUSH {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603008","date":"20220227","time":"014307699","position":[54.1217843,8.2033962,8.4],"std_dev":[0.98,1.70,2.10],"velocity":0.055,"course":0.000,"mode":5,"sat_cnt":12}
