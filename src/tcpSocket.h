@@ -19,6 +19,10 @@ class TcpSocket
 {
     public:
     typedef int (*action_t)(char*,char*);
+    typedef struct {
+        int socket = 0;
+        int group = 0;
+    } client_t;
 
     TcpSocket(
         unsigned int port,
@@ -26,7 +30,9 @@ class TcpSocket
     );
     int init();
     int spin();
-    int addCmd(std::string,action_t);
+    int addCmd(std::string, action_t);
+    int joinGroup(int, int);
+    ssize_t sendGroup(int, char*, size_t);
     
     private:
     const unsigned int _port;
@@ -34,7 +40,7 @@ class TcpSocket
 
     const char _error_cmd_unknown[24] = "EXIT command unknown\r\n";
 
-    int _client_socket[TCPSOCKET_MAXCLIENTS];
+    client_t _clients[TCPSOCKET_MAXCLIENTS];
     int _master_socket;
     struct sockaddr_in _address;
     unsigned int _addrlen;
@@ -44,4 +50,5 @@ class TcpSocket
     std::map<std::string,action_t> _cmd_map;
 
     int handleCmd(size_t);
+    int closeConn(int);
 };

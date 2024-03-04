@@ -22,11 +22,6 @@ TcpSocket::TcpSocket(
 };
      
 int TcpSocket::init() {
-    //initialise all client_socket[] to 0 so not checked  
-    for (unsigned int i = 0; i < TCPSOCKET_MAXCLIENTS; ++i) {
-        _client_socket[i] = 0;   
-    }
-
     //create a master socket  
     _master_socket = socket(AF_INET , SOCK_STREAM , 0);
     if(_master_socket == 0) { 
@@ -79,7 +74,7 @@ int TcpSocket::spin() {
     //add child sockets to set  
     for (unsigned int i = 0; i < TCPSOCKET_MAXCLIENTS; i++) {   
         //socket descriptor  
-        int sd = _client_socket[i];   
+        int sd = _clients[i].socket;   
         
         //if valid socket descriptor then add to read list  
         if(sd > 0) FD_SET( sd , &readfds);   
@@ -117,8 +112,8 @@ int TcpSocket::spin() {
         //add new socket to array of sockets
         for (unsigned int i = 0; i < TCPSOCKET_MAXCLIENTS; ++i) {   
             //if position is empty  
-            if (_client_socket[i] == 0) {
-                _client_socket[i] = new_socket;
+            if (_clients[i].socket == 0) {
+                _clients[i].socket = new_socket;
                 printf("Adding to list of sockets as %d\n" , i);
                 break;
             }
@@ -127,7 +122,7 @@ int TcpSocket::spin() {
     
     //else its some IO operation on some other socket 
     for (unsigned int i = 0; i < TCPSOCKET_MAXCLIENTS; i++) {
-        int sd = _client_socket[i];
+        int sd = _clients[i].socket;
 
         if (FD_ISSET(sd , &readfds)) {
             size_t msgsize;
@@ -141,7 +136,7 @@ int TcpSocket::spin() {
                 
                 //Close the socket and mark as 0 in list for reuse  
                 close(sd);
-                _client_socket[i] = 0;
+                _clients[i].socket = 0;
             } else {
                 //set the string terminating NULL byte on the end
                 //of the data read
@@ -151,8 +146,7 @@ int TcpSocket::spin() {
                     getpeername(sd, (struct sockaddr*)&_address, (socklen_t*)&_addrlen);   
                     printf("Quit connection, err: cmd missing , ip %s , port %d \n" ,
                             inet_ntoa(_address.sin_addr) , ntohs(_address.sin_port));
-                    close(sd);
-                    _client_socket[i] = 0;
+                    closeConn(i);
                 }
                 int cmd_rslt = handleCmd(msgsize);
                 // < 0 means to close connection after response
@@ -167,8 +161,7 @@ int TcpSocket::spin() {
                         printf("Quit connection, client said goodbye , ip %s , port %d \n" ,
                             inet_ntoa(_address.sin_addr) , ntohs(_address.sin_port));
                     }
-                    close(sd);
-                    _client_socket[i] = 0;
+                    closeConn(i);
                 }
                 send(sd, _send_buffer, cmd_rslt, 0);
             }
@@ -192,4 +185,26 @@ int TcpSocket::handleCmd(size_t msgsize) {
     }
 
     return _cmd_map[cmd](&_recv_buffer[5],_send_buffer);
+}
+
+int TcpSocket::closeConn(int id) {
+    int ret = close(_clients[id].socket);
+    _clients[id].socket = 0;
+    _clients[id].group = 0;
+    return ret;
+}
+
+int TcpSocket::joinGroup(int id, int group) {
+    _clients[id].group = group;
+    return 0;
+}
+
+ssize_t TcpSocket::sendGroup(int group, char* msg, size_t len) {
+    ssize_t ret = 0;
+    for (int i = 0; i < TCPSOCKET_MAXCLIENTS; ++i) {
+        if (group > 0 && _clients[i].group == group) {
+            ret += send(_clients[i].socket, msg, len, 0);
+        }
+    }
+    return ret;
 }
