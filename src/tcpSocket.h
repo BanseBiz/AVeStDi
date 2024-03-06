@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <map>
 #include <string>
+#include <boost/uuid/uuid.hpp>
 
 #define TCPSOCKET_MAXCLIENTS 128
 #define TCPSOCKET_MAXPENDINGCONNECTIONS 3
@@ -22,6 +23,13 @@ class TcpSocket
     typedef struct {
         int socket = 0;
         int group = 0;
+        boost::uuids::uuid uuid = { 
+            0x00 ,0x00, 0x00, 0x00,
+            0x00, 0x00,
+            0x00, 0x00,
+            0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+        };
     } client_t;
 
     TcpSocket(
@@ -31,7 +39,9 @@ class TcpSocket
     int init();
     int spin();
     int addCmd(std::string, action_t);
+    int registerClient(int, boost::uuids::uuid);
     int joinGroup(int, int);
+    ssize_t sendClient(boost::uuids::uuid, char*, size_t);
     ssize_t sendGroup(int, char*, size_t);
     
     private:
@@ -48,6 +58,7 @@ class TcpSocket
     char _recv_buffer[TCPSOCKET_RECVBUFFERSIZE];
     char _send_buffer[TCPSOCKET_SENDBUFFERSIZE];
     std::map<std::string,action_t> _cmd_map;
+    std::map<boost::uuids::uuid,client_t*> _client_map;
 
     int handleCmd(size_t);
     int closeConn(int);

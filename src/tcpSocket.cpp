@@ -175,6 +175,16 @@ int TcpSocket::addCmd(std::string cmd, action_t action) {
     return 0;
 }
 
+int TcpSocket::registerClient(int id, boost::uuids::uuid uuid) {
+    std::map<boost::uuids::uuid,client_t*>::iterator it = _client_map.find(uuid);
+    if (it == _client_map.end()) {
+        _client_map[uuid] = &_clients[id];
+        _clients[id].uuid = uuid;
+        return 0;
+    }
+    return 1;
+}
+
 int TcpSocket::handleCmd(size_t msgsize) {
     std::string msg(_recv_buffer);
     std::string cmd = msg.substr(0, 4);
@@ -191,12 +201,26 @@ int TcpSocket::closeConn(int id) {
     int ret = close(_clients[id].socket);
     _clients[id].socket = 0;
     _clients[id].group = 0;
+    _client_map.erase(_clients[id].uuid);
+    _clients[id].uuid = { 
+        0x00 ,0x00, 0x00, 0x00,
+        0x00, 0x00,
+        0x00, 0x00,
+        0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    };
     return ret;
 }
 
 int TcpSocket::joinGroup(int id, int group) {
     _clients[id].group = group;
     return 0;
+}
+
+ssize_t TcpSocket::sendClient(boost::uuids::uuid uuid, char* msg, size_t len) {
+    std::map<boost::uuids::uuid,client_t*>::iterator it = _client_map.find(uuid);
+    if (it == _client_map.end()) return -1;
+    return send(_client_map[uuid]->socket, msg, len, 0);
 }
 
 ssize_t TcpSocket::sendGroup(int group, char* msg, size_t len) {

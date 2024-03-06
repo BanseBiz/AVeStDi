@@ -17,5 +17,6 @@ public:
     Vehicle& get(boost::uuids::uuid);
     bool contains(boost::uuids::uuid);
     int toCString(char*,size_t) const;
+    int toCString(char*,size_t,Vehicle&) const;
     bool empty() const noexcept;
 };

@@ -1,13 +1,19 @@
 #include "vehicle.hpp"
-#include <GeographicLib/Geodesic.hpp>
+#include <GeographicLib/Constants.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-Vehicle::Vehicle() {
+Vehicle::Vehicle()
+ : _geod(GeographicLib::Constants::WGS84_a(), GeographicLib::Constants::WGS84_f()) {
+
+};
+
+Vehicle::Vehicle(boost::uuids::uuid uuid)
+ : _uuid(uuid), _geod(GeographicLib::Constants::WGS84_a(), GeographicLib::Constants::WGS84_f()) {
 
 };
 
 Vehicle::Vehicle(boost::uuids::uuid uuid, double lat, double lon, double alt, time_t timestamp)
- : _uuid(uuid) {
+ : _uuid(uuid), _geod(GeographicLib::Constants::WGS84_a(), GeographicLib::Constants::WGS84_f()) {
     setPosition(lat, lon, alt, timestamp);
 };
 
@@ -140,6 +146,10 @@ int Vehicle::tick(time_t now) {
     return 0;
 }
 
+boost::uuids::uuid Vehicle::getUUID() const {
+    return _uuid;
+}
+
 int Vehicle::toCString(char* out, size_t max) const {
     const std::string s_uuid = boost::uuids::to_string(_uuid);
     return snprintf(out, max,
@@ -155,5 +165,39 @@ int Vehicle::toCString(char* out, size_t max) const {
         _pos_std_dev[LAT], _pos_std_dev[LON], _pos_std_dev[ALT],
         _orientation[YAW], _orientation[PITCH], _orientation[ROLL],
         _velocity[X], _velocity[Y], _velocity[Z]
+    );
+}
+
+int Vehicle::toCString(char* out, size_t max, Vehicle& reference) const {
+    const std::string s_uuid = boost::uuids::to_string(_uuid);
+    double s12 = 0.0; //Distance
+    double azi1 = 0.0; //Fwd. Azimuth
+    double azi2 = 0.0; //Backw. Azimuth
+    double direction = 0.0;
+    std::array<double,3UL> ref_pos = reference.getPosition();
+    _geod.Inverse(
+        _position[LAT],
+        _position[LON],
+        ref_pos[LAT],
+        ref_pos[LON],
+        s12, azi1, azi2
+    );
+
+    return snprintf(out, max,
+        "{\"type\":\"ground\","
+        "\"uuid\":\"%s\","
+        "\"timestamp\":\"%lu\","
+        "\"position\":[%.8f,%.8f,%.3f],"
+        "\"std_dev\":[%.2f,%.2f,%.2f],"
+        "\"orientation\":[%.4f,%.4f,%.4f],"
+        "\"velocity\":[%.4f,%.4f,%.4f],"
+        "\"distance\":%.4f,"
+        "\"direction\":%.4f}",
+        s_uuid.c_str(), _recent_update,
+        _position[LAT], _position[LON], _position[ALT],
+        _pos_std_dev[LAT], _pos_std_dev[LON], _pos_std_dev[ALT],
+        _orientation[YAW], _orientation[PITCH], _orientation[ROLL],
+        _velocity[X], _velocity[Y], _velocity[Z],
+        s12, azi1
     );
 }
