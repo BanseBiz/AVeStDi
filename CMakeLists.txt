@@ -15,7 +15,7 @@ enable_testing()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/lib/CMakeLists.txt)
 
-add_executable(av-data-distributer src/main.cpp src/vehicle.cpp src/movement.cpp src/tcpSocket.cpp src/storage.cpp)
+add_executable(av-data-distributer src/main.cpp src/vehicle.cpp src/movement.cpp src/tcpSocket.cpp src/storage.cpp src/cmdHandler.cpp)
 target_link_libraries(av-data-distributer uWebSockets ${GeographicLib_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES})
 
 add_executable(av-data-client src/client.cpp src/vehicle.cpp src/movement.cpp)

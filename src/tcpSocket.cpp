@@ -200,7 +200,6 @@ int TcpSocket::handleCmd(size_t msgsize) {
 int TcpSocket::closeConn(int id) {
     int ret = close(_clients[id].socket);
     _clients[id].socket = 0;
-    _clients[id].group = 0;
     _client_map.erase(_clients[id].uuid);
     _clients[id].uuid = { 
         0x00 ,0x00, 0x00, 0x00,
@@ -212,23 +211,8 @@ int TcpSocket::closeConn(int id) {
     return ret;
 }
 
-int TcpSocket::joinGroup(int id, int group) {
-    _clients[id].group = group;
-    return 0;
-}
-
 ssize_t TcpSocket::sendClient(boost::uuids::uuid uuid, char* msg, size_t len) {
     std::map<boost::uuids::uuid,client_t*>::iterator it = _client_map.find(uuid);
     if (it == _client_map.end()) return -1;
     return send(_client_map[uuid]->socket, msg, len, 0);
-}
-
-ssize_t TcpSocket::sendGroup(int group, char* msg, size_t len) {
-    ssize_t ret = 0;
-    for (int i = 0; i < TCPSOCKET_MAXCLIENTS; ++i) {
-        if (group > 0 && _clients[i].group == group) {
-            ret += send(_clients[i].socket, msg, len, 0);
-        }
-    }
-    return ret;
 }

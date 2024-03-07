@@ -22,7 +22,6 @@ class TcpSocket
     typedef int (*action_t)(char*,char*);
     typedef struct {
         int socket = 0;
-        int group = 0;
         boost::uuids::uuid uuid = { 
             0x00 ,0x00, 0x00, 0x00,
             0x00, 0x00,
@@ -40,9 +39,7 @@ class TcpSocket
     int spin();
     int addCmd(std::string, action_t);
     int registerClient(int, boost::uuids::uuid);
-    int joinGroup(int, int);
     ssize_t sendClient(boost::uuids::uuid, char*, size_t);
-    ssize_t sendGroup(int, char*, size_t);
     
     private:
     const unsigned int _port;
