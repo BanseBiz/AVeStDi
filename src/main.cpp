@@ -11,21 +11,18 @@
 #include <algorithm>
 #include <libusockets.h>
 
-#define PORT 8888
+#define TCP_PORT 6156
+#define WS_PORT 8096
 #define WS_BUFFER_SIZE 16384
 
 int main(int argc , char *argv[]) {
         struct PerSocketData {
 
     };
-
-    /* Simple echo websocket server, using multiple threads */
     std::vector<std::thread *> threads(std::thread::hardware_concurrency());
 
     std::transform(threads.begin(), threads.end(), threads.begin(), [](std::thread */*t*/) {
         return new std::thread([]() {
-
-            /* Very simple WebSocket echo server */
             char r_buffer[WS_BUFFER_SIZE];
             char s_buffer[WS_BUFFER_SIZE];
             uWS::App().ws<PerSocketData>("/*", {
@@ -54,48 +51,66 @@ int main(int argc , char *argv[]) {
                 .close = [](auto */*ws*/, int /*code*/, std::string_view /*message*/) {
 
                 }
-            }).get("/version", [&s_buffer](auto *res, auto * /*req*/) {
-                CmdHandler::vers(NULL,s_buffer);
-                res->end(s_buffer);
             }).get("/*", [&s_buffer](auto *res, auto * /*req*/) {
+                int idx = CmdHandler::vers(NULL,s_buffer);
+                s_buffer[idx] = '\0';
+                res->end(s_buffer);
+            }).get("/list", [&s_buffer](auto *res, auto * /*req*/) {
                 CmdHandler::show(NULL,s_buffer);
                 res->end(s_buffer);
+            }).put("/list", [&s_buffer, &r_buffer](auto *res, auto *req){
+                std::string buffer;
+                res->onAborted([=]() {
+                    std::cout << "HTTP socket was closed before we upgraded it!" << std::endl;
+                });
+                res->onData([res, s_buffer, r_buffer](std::string_view data, bool last) mutable {
+                    if (data.length() > WS_BUFFER_SIZE) {
+                        res->end("ERR: received msg is to large");
+                    } else {
+                        std::memcpy(r_buffer, data.data(), data.length());
+                        if (last) {
+                            int idx = CmdHandler::putl(r_buffer,s_buffer);
+                            r_buffer[idx] = '\0';
+                            res->end(s_buffer);
+                        }
+                    }
+                });
             }).put("/*", [&s_buffer, &r_buffer](auto *res, auto *req){
                 std::string buffer;
                 res->onAborted([=]() {
                     std::cout << "HTTP socket was closed before we upgraded it!" << std::endl;
                 });
                 res->onData([res, s_buffer, r_buffer](std::string_view data, bool last) mutable {
-                    /* Mutate the captured data */
                     if (data.length() > WS_BUFFER_SIZE) {
                         res->end("ERR: received msg is to large");
                     } else {
                         std::memcpy(r_buffer, data.data(), data.length());
                         if (last) {
-                            CmdHandler::puts(r_buffer,s_buffer);
+                            int idx = CmdHandler::puts(r_buffer,s_buffer);
+                            r_buffer[idx] = '\0';
                             res->end(s_buffer);
                         }
                     }
                 });
-            }).listen(9001, [](auto *listen_socket) {
+            }).listen(WS_PORT, [](auto *listen_socket) {
                 if (listen_socket) {
-                    std::cout << "Thread " << std::this_thread::get_id() << " listening on port " << 9001 << std::endl;
+                    std::cout << "Thread " << std::this_thread::get_id() << " listening on TCP_PORT " << WS_PORT << std::endl;
                 } else {
-                    std::cout << "Thread " << std::this_thread::get_id() << " failed to listen on port 9001" << std::endl;
+                    std::cout << "Thread " << std::this_thread::get_id() << " failed to listen on TCP_PORT " << WS_PORT << std::endl;
                 }
             }).run();
 
         });
     });
 
-    char helo_msg[] = "HELO - AVeStDi daemon at " VERSION;
-    TcpSocket tsck(PORT, helo_msg);
+    char helo_msg[] = "HELO - AVeStDi daemon"; //AutonomousVehicleStatusDistributer
+    TcpSocket tsck(TCP_PORT, helo_msg);
     tsck.init();
     tsck.addCmd("VERS", CmdHandler::vers);
     tsck.addCmd("QUIT", CmdHandler::quit);
     tsck.addCmd("PUTL", CmdHandler::putl);
     tsck.addCmd("PUTS", CmdHandler::puts);
-    tsck.addCmd("SHOW", CmdHandler::show);
+    tsck.addCmd("LIST", CmdHandler::show);
     while(1) {
         tsck.spin();
     }
@@ -106,6 +121,3 @@ int main(int argc , char *argv[]) {
 
     return 0;
 }
-
-//PUTL {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603009","date":"20220227","time":"014307692","position":[53.1217843,8.7033962,8.4],"std_dev":[0.98,1.70,2.10],"velocity":0.055,"course":0.000,"mode":5,"sat_cnt":12};
-//PUTS {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603008","date":"20220227","time":"014307699","position":[54.1217843,8.2033962,8.4],"std_dev":[0.98,1.70,2.10],"velocity":0.055,"course":0.000,"mode":5,"sat_cnt":12}

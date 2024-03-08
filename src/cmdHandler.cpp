@@ -2,6 +2,7 @@
 #include "tcpSocket.h"
 
 #include <cstring>
+#include <string>
 #include <iostream>
 #include <stdexcept>
 
@@ -13,11 +14,13 @@
 
 
 Storage CmdHandler::_stor = Storage();
+std::string c_date(__DATE__);
+std::string c_time(__TIME__);
+std::string CmdHandler::_version("AVeSti Daemon Version: "+c_date+" "+c_time+"\r\n");
 
 int CmdHandler::vers(char*, char* send) {
-    const char msg[] = VERSION;
-    std::memcpy(send,msg,10);
-    return 14;
+    std::memcpy(send,_version.c_str(),_version.length());
+    return _version.length();
 }
 
 int CmdHandler::quit(char*, char* send) {

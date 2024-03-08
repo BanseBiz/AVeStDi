@@ -1,7 +1,6 @@
 #include "vehicle.hpp"
 #include "storage.hpp"
-
-#define VERSION "v240306\r\n"
+#include <string>
 
 class CmdHandler {
     public:
@@ -10,6 +9,8 @@ class CmdHandler {
     static int show(char*, char*);
     static int puts(char*, char*);
     static int putl(char*, char*);
+
+    static std::string _version;
 
     private:
     static Vehicle& updateAVbyJson(char* recv);
