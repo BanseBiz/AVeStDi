@@ -60,6 +60,23 @@ int main(int argc , char *argv[]) {
             }).get("/*", [&s_buffer](auto *res, auto * /*req*/) {
                 CmdHandler::show(NULL,s_buffer);
                 res->end(s_buffer);
+            }).put("/*", [&s_buffer, &r_buffer](auto *res, auto *req){
+                std::string buffer;
+                res->onAborted([=]() {
+                    std::cout << "HTTP socket was closed before we upgraded it!" << std::endl;
+                });
+                res->onData([res, s_buffer, r_buffer](std::string_view data, bool last) mutable {
+                    /* Mutate the captured data */
+                    if (data.length() > WS_BUFFER_SIZE) {
+                        res->end("ERR: received msg is to large");
+                    } else {
+                        std::memcpy(r_buffer, data.data(), data.length());
+                        if (last) {
+                            CmdHandler::puts(r_buffer,s_buffer);
+                            res->end(s_buffer);
+                        }
+                    }
+                });
             }).listen(9001, [](auto *listen_socket) {
                 if (listen_socket) {
                     std::cout << "Thread " << std::this_thread::get_id() << " listening on port " << 9001 << std::endl;
