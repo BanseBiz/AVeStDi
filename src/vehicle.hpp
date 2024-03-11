@@ -23,17 +23,19 @@ class Vehicle
     int setAcceleration(double, double, double, time_t);
     int setAngularAcceleration(double, double, double, time_t);
 
-    std::array<double,3> getPosition();
-    std::array<double,3> getOrientation();
-    std::array<double,3> getVelocity();
-    std::array<double,3> getRotation();
-    std::array<double,3> getAcceleration();
-    std::array<double,3> getAngularAcceleration();
-    std::string toString();
+    std::array<double,3> getPosition() const;
+    std::array<double,3> getOrientation() const;
+    std::array<double,3> getVelocity() const;
+    std::array<double,3> getRotation() const;
+    std::array<double,3> getAcceleration() const;
+    std::array<double,3> getAngularAcceleration() const;
+    std::string toString() const;
     int toCString(char*,size_t) const;
-    int toCString(char*,size_t,Vehicle&) const;
+    int toCString(char*,size_t,Vehicle&,time_t) const;
     boost::uuids::uuid getUUID() const;
-    
+    double getSearchPerimeter() const;
+    time_t getRecentUpdate() const;
+
     private:
     boost::uuids::uuid _uuid;
     GeographicLib::Geodesic _geod;
@@ -44,7 +46,7 @@ class Vehicle
     double _rotation[3] = {0.0,0.0,0.0};             // radians / second
     double _acceleration[3] = {0.0,0.0,0.0};         // meters per square second
     double _angular_acceleration[3] = {0.0,0.0,0.0}; // radians per square second
-    double _area_of_effect = 0.0;                    // distance in meters the av gets
+    double _search_perimeter = 0.0;                    // distance in meters the av gets
                                                      //   notified about ather avs
 
     time_t _recent_update[6];

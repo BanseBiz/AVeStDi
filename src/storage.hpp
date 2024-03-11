@@ -8,6 +8,7 @@ class Storage
 {
 private:
     std::map<boost::uuids::uuid,Vehicle> _nodes;
+    time_t _max_age = 0;
 
 public:
     Storage(/* args */);
@@ -19,4 +20,5 @@ public:
     int toCString(char*,size_t) const;
     int toCString(char*,size_t,Vehicle&) const;
     bool empty() const noexcept;
+    void setMaxAge(time_t);
 };

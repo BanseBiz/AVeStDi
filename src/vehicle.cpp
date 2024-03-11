@@ -78,32 +78,32 @@ int Vehicle::setAngularAcceleration(double yaw, double pitch, double roll, time_
     return 0;
 }
 
-std::array<double,3> Vehicle::getPosition() {
+std::array<double,3> Vehicle::getPosition() const {
     std::array<double,3> pos = {_position[LAT], _position[LON], _position[ALT]};
     return pos;
 }
 
-std::array<double,3> Vehicle::getOrientation() {
+std::array<double,3> Vehicle::getOrientation() const {
     std::array<double,3> orient = {_orientation[YAW], _orientation[PITCH], _orientation[ROLL]};
     return orient;
 }
 
-std::array<double,3> Vehicle::getVelocity() {
+std::array<double,3> Vehicle::getVelocity() const {
     std::array<double,3> vel = {_velocity[X], _velocity[Y], _velocity[Z]};
     return vel;
 }
 
-std::array<double,3> Vehicle::getRotation() {
+std::array<double,3> Vehicle::getRotation() const {
     std::array<double,3> rot = {_rotation[YAW], _rotation[PITCH], _rotation[ROLL]};
     return rot;
 }
 
-std::array<double,3> Vehicle::getAcceleration() {
+std::array<double,3> Vehicle::getAcceleration() const {
     std::array<double,3> acc = {_acceleration[X], _acceleration[Y], _acceleration[Z]};
     return acc;
 }
 
-std::array<double,3> Vehicle::getAngularAcceleration() {
+std::array<double,3> Vehicle::getAngularAcceleration() const {
     std::array<double,3> rot_acc = {_angular_acceleration[YAW], _angular_acceleration[PITCH], _angular_acceleration[ROLL]};
     return rot_acc;
 }
@@ -150,6 +150,14 @@ boost::uuids::uuid Vehicle::getUUID() const {
     return _uuid;
 }
 
+double Vehicle::getSearchPerimeter() const {
+    return _search_perimeter;
+}
+
+time_t Vehicle::getRecentUpdate() const {
+    return _recent_update[0];
+}
+
 int Vehicle::toCString(char* out, size_t max) const {
     const std::string s_uuid = boost::uuids::to_string(_uuid);
     return snprintf(out, max,
@@ -168,7 +176,11 @@ int Vehicle::toCString(char* out, size_t max) const {
     );
 }
 
-int Vehicle::toCString(char* out, size_t max, Vehicle& reference) const {
+int Vehicle::toCString(char* out, size_t max, Vehicle& reference, time_t max_age) const {
+    if ((max_age > 0) && ((getRecentUpdate() + max_age) < reference.getRecentUpdate())) {
+        return 0;
+    }
+    
     const std::string s_uuid = boost::uuids::to_string(_uuid);
     double s12 = 0.0; //Distance
     double azi1 = 0.0; //Fwd. Azimuth
@@ -182,6 +194,10 @@ int Vehicle::toCString(char* out, size_t max, Vehicle& reference) const {
         ref_pos[LON],
         s12, azi1, azi2
     );
+
+    if (reference.getSearchPerimeter() > 0.0 && reference.getSearchPerimeter() > s12) {
+        return 0;
+    }
 
     return snprintf(out, max,
         "{\"type\":\"ground\","

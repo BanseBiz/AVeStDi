@@ -30,8 +30,11 @@ int Storage::toCString(char* out, size_t max) const {
     }
     out[0] = '[';
     int idx = 1;
+    int inkr;
     for (auto const& av : _nodes){
-        idx += av.second.toCString(out + idx, max - idx);
+        inkr = av.second.toCString(out + idx, max - idx);
+        if (inkr <= 0) continue;
+        idx += inkr;
         if (idx >= max-2) return -1;
         out[idx++] = ',';
     }
@@ -47,9 +50,12 @@ int Storage::toCString(char* out, size_t max, Vehicle& reference) const {
     }
     out[0] = '[';
     int idx = 1;
+    int inkr;
     for (auto const& av : _nodes){
         if (av.first == reference.getUUID()) continue;
-        idx += av.second.toCString(out + idx, max - idx, reference);
+        inkr = av.second.toCString(out + idx, max - idx, reference, _max_age);
+        if (inkr <= 0) continue;
+        idx += inkr;
         if (idx >= max-2) return -1;
         out[idx++] = ',';
     }
