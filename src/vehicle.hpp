@@ -16,7 +16,7 @@ class Vehicle
     int tick(time_t);
     
     int setPosition(double, double, double, time_t);
-    int setPosStdDev(double, double, double);
+    int setPosStdDev(double, double, double, time_t);
     int setOrientation(double, double, double, time_t);
     int setVelocity(double, double, double, time_t);
     int setRotation(double, double, double, time_t);
@@ -49,5 +49,5 @@ class Vehicle
     double _search_perimeter = 0.0;                    // distance in meters the av gets
                                                      //   notified about ather avs
 
-    time_t _recent_update[6] = {0L,0L,0L,0L,0L,0L};
+    time_t _recent_update[7] = {0L,0L,0L,0L,0L,0L,0L};
 };

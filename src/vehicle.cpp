@@ -26,7 +26,9 @@ int Vehicle::setPosition(double lat, double lon, double alt, time_t timestamp) {
     return 0;
 }
 
-int Vehicle::setPosStdDev(double lat, double lon, double alt) {
+int Vehicle::setPosStdDev(double lat, double lon, double alt, time_t timestamp) {
+    if (timestamp < _recent_update[6]) return 1;
+    _recent_update[6] = timestamp;
     _pos_std_dev[LAT] = lat;
     _pos_std_dev[LON] = lon;
     _pos_std_dev[ALT] = alt;

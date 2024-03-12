@@ -67,7 +67,7 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     // parse json msg
     Vehicle& av = _stor.get(uuid);
     av.setPosition(position[LAT], position[LON], position[ALT], r_time);
-    av.setPosStdDev(pos_std_dev[LAT],pos_std_dev[LON],pos_std_dev[ALT]);
+    av.setPosStdDev(pos_std_dev[LAT],pos_std_dev[LON],pos_std_dev[ALT], r_time);
     return av;
 }
 
