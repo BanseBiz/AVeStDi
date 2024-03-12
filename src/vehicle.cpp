@@ -57,7 +57,7 @@ int Vehicle::setRotation(double yaw, double pitch, double roll, time_t timestamp
     if (timestamp < _recent_update[3]) return 1;
     _recent_update[3] = timestamp;
     _rotation[YAW] = yaw;
-    _rotation[PITCH] = roll;
+    _rotation[PITCH] = pitch;
     _rotation[ROLL] = roll;
     return 0;
 }
@@ -77,6 +77,11 @@ int Vehicle::setAngularAcceleration(double yaw, double pitch, double roll, time_
     _angular_acceleration[YAW] = yaw;
     _angular_acceleration[PITCH] = pitch;
     _angular_acceleration[ROLL] = roll;
+    return 0;
+}
+
+int Vehicle::setConfPerimeter(double perimeter) {
+    _perimeter = perimeter;
     return 0;
 }
 
@@ -152,8 +157,8 @@ boost::uuids::uuid Vehicle::getUUID() const {
     return _uuid;
 }
 
-double Vehicle::getSearchPerimeter() const {
-    return _search_perimeter;
+double Vehicle::getPerimeter() const {
+    return _perimeter;
 }
 
 time_t Vehicle::getRecentUpdate() const {
@@ -162,20 +167,64 @@ time_t Vehicle::getRecentUpdate() const {
 
 int Vehicle::toCString(char* out, size_t max) const {
     const std::string s_uuid = boost::uuids::to_string(_uuid);
-    return snprintf(out, max,
+    int idx = snprintf(out, max,
         "{\"type\":\"ground\","
         "\"uuid\":\"%s\","
-        "\"timestamp\":\"%lu\","
-        "\"position\":[%.8f,%.8f,%.3f],"
-        "\"std_dev\":[%.2f,%.2f,%.2f],"
-        "\"orientation\":[%.4f,%.4f,%.4f],"
-        "\"velocity\":[%.4f,%.4f,%.4f]}",
-        s_uuid.c_str(), _recent_update,
-        _position[LAT], _position[LON], _position[ALT],
-        _pos_std_dev[LAT], _pos_std_dev[LON], _pos_std_dev[ALT],
-        _orientation[YAW], _orientation[PITCH], _orientation[ROLL],
-        _velocity[X], _velocity[Y], _velocity[Z]
+        "\"timestamp\":\"%lu\"",
+        s_uuid.c_str(), _recent_update
     );
+    if (_recent_update[0] > 0L) {
+        idx += snprintf(out+idx, max-idx,
+            "\",position\":[%.8f,%.8f,%.3f]",
+            _position[LAT], _position[LON], _position[ALT]
+        );
+    }
+    if (_recent_update[6] > 0L) {
+        idx += snprintf(out+idx, max-idx,
+            "\",std_dev\":[%.2f,%.2f,%.2f]",
+            _pos_std_dev[LAT], _pos_std_dev[LON], _pos_std_dev[ALT]
+        );
+    }
+    if (_recent_update[1] > 0L) {
+        idx += snprintf(out+idx, max-idx,
+            "\",orientation\":[%.4f,%.4f,%.4f]",
+            _orientation[YAW], _orientation[PITCH], _orientation[ROLL]
+        );
+    }
+    if (_recent_update[2] > 0L) {
+        idx += snprintf(out+idx, max-idx,
+            "\",velocity\":[%.4f,%.4f,%.4f]",
+            _velocity[X], _velocity[Y], _velocity[Z]
+        );
+    }
+    if (_recent_update[3] > 0L) {
+        idx += snprintf(out+idx, max-idx,
+            "\",rotation\":[%.4f,%.4f,%.4f]",
+            _rotation[YAW], _rotation[PITCH], _rotation[ROLL]
+        );
+    }
+    if (_recent_update[4] > 0L) {
+        idx += snprintf(out+idx, max-idx,
+            "\",acceleration\":[%.4f,%.4f,%.4f]",
+            _acceleration[X], _acceleration[Y], _acceleration[Z]
+        );
+    }
+    if (_recent_update[5] > 0L) {
+        idx += snprintf(out+idx, max-idx,
+            "\",ang_accel\":[%.4f,%.4f,%.4f]",
+            _angular_acceleration[YAW], _angular_acceleration[PITCH], _angular_acceleration[ROLL]
+        );
+    }
+    if (_perimeter > 0.0) {
+        idx += snprintf(out+idx, max-idx,
+            "\",perimeter\":%.4f",
+            _perimeter
+        );
+    }
+    idx += snprintf(out+idx, max-idx,
+        "}"
+    );
+    return idx;
 }
 
 int Vehicle::toCString(char* out, size_t max, Vehicle& reference, time_t max_age) const {
@@ -197,25 +246,15 @@ int Vehicle::toCString(char* out, size_t max, Vehicle& reference, time_t max_age
         s12, azi1, azi2
     );
 
-    if (reference.getSearchPerimeter() > 0.0 && reference.getSearchPerimeter() > s12) {
+    if (reference.getPerimeter() > 0.0 && reference.getPerimeter() < s12) {
         return 0;
     }
 
-    return snprintf(out, max,
-        "{\"type\":\"ground\","
-        "\"uuid\":\"%s\","
-        "\"timestamp\":\"%lu\","
-        "\"position\":[%.8f,%.8f,%.3f],"
-        "\"std_dev\":[%.2f,%.2f,%.2f],"
-        "\"orientation\":[%.4f,%.4f,%.4f],"
-        "\"velocity\":[%.4f,%.4f,%.4f],"
-        "\"distance\":%.4f,"
+    int idx = toCString(out, max) - 1;
+
+    return idx + snprintf(out+idx, max-idx-1,
+        "\",distance\":%.4f,"
         "\"direction\":%.4f}",
-        s_uuid.c_str(), _recent_update,
-        _position[LAT], _position[LON], _position[ALT],
-        _pos_std_dev[LAT], _pos_std_dev[LON], _pos_std_dev[ALT],
-        _orientation[YAW], _orientation[PITCH], _orientation[ROLL],
-        _velocity[X], _velocity[Y], _velocity[Z],
         s12, azi1
     );
 }

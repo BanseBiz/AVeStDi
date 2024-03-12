@@ -29,6 +29,16 @@ int CmdHandler::quit(char*, char* send) {
     return -2;
 }
 
+bool handleJsonOptionalArray(boost::property_tree::ptree pt, const boost::property_tree::path path, double* dest) {
+    boost::optional<boost::property_tree::ptree &> json = pt.get_child_optional(path);
+    if (json) {
+        unsigned int i = 0;
+        for (auto& item : json.get()) dest[i++] = item.second.get_value<double>();
+        return true;
+    }
+    return false;
+}
+
 Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     std::stringstream ss;
     ss << recv;
@@ -37,7 +47,7 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     boost::property_tree::ptree j_sensor = pt.get_child("sensor");
 
     if (j_sensor.get_value<std::string>() != "gps") {
-        throw std::invalid_argument("JSON sting does not contain gps sensor data");
+        throw std::invalid_argument("json string does not contain gps sensor data");
     }
 
     // uuid
@@ -51,23 +61,32 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     uint64_t r_time = j_date.get_value<uint64_t>();
     r_time *= 1000000000;
     r_time += j_time.get_value<uint64_t>();
-
-    // position
-    double position[3];
-    unsigned int i = 0;
-    for (auto& item : pt.get_child("position"))
-        position[i++] = item.second.get_value<double>();
     
-    // position std_dev
-    double pos_std_dev[3];
-    i = 0;
-    for (auto& item : pt.get_child("std_dev"))
-        pos_std_dev[i++] = item.second.get_value<double>();
-    
-    // parse json msg
     Vehicle& av = _stor.get(uuid);
-    av.setPosition(position[LAT], position[LON], position[ALT], r_time);
-    av.setPosStdDev(pos_std_dev[LAT],pos_std_dev[LON],pos_std_dev[ALT], r_time);
+    double array[3];
+
+    if (handleJsonOptionalArray(pt, "position", array)) {
+        av.setPosition(array[LAT],array[LON],array[ALT], r_time);
+    }
+    if (handleJsonOptionalArray(pt, "std_dev", array)) {
+        av.setPosStdDev(array[LAT],array[LON],array[ALT], r_time);
+    }
+    if (handleJsonOptionalArray(pt, "orientation", array)) {
+        av.setOrientation(array[LAT],array[LON],array[ALT], r_time);
+    }
+    if (handleJsonOptionalArray(pt, "rotation", array)) {
+        av.setRotation(array[LAT],array[LON],array[ALT], r_time);
+    }
+    if (handleJsonOptionalArray(pt, "acceleration", array)) {
+        av.setRotation(array[LAT],array[LON],array[ALT], r_time);
+    }
+    if (handleJsonOptionalArray(pt, "ang_accel", array)) {
+        av.setAngularAcceleration(array[LAT],array[LON],array[ALT], r_time);
+    }
+
+    boost::optional<double> j_perimeter = pt.get_optional<double>("perimeter");
+    if (j_perimeter) av.setConfPerimeter(j_perimeter.get());
+
     return av;
 }
 
@@ -77,7 +96,7 @@ int CmdHandler::puts(char* recv, char* send) {
         std::memcpy(send, "OK\r\n", 5);
         return 5;
     } catch (const std::invalid_argument& e) {
-        std::memcpy(send, "ERR: no gps data found in JSON string\r\n", 40);
+        std::memcpy(send, "ERR: no gps data found in json string\r\n", 40);
         return 40;
     } catch (const boost::property_tree::ptree_bad_data& e) {
         std::memcpy(send, "ERR: incomplete gps data in json string\r\n", 42);
@@ -98,7 +117,7 @@ int CmdHandler::putl(char* recv, char* send) {
             return idx + 2;
         }
     } catch (const std::invalid_argument& e) {
-        std::memcpy(send, "ERR: no gps data found in JSON string\r\n", 40);
+        std::memcpy(send, "ERR: no gps data found in json string\r\n", 40);
     } catch (const boost::property_tree::ptree_bad_data& e) {
         std::memcpy(send, "ERR: incomplete gps data in json string\r\n", 42);
     } catch (const boost::property_tree::json_parser_error& e) {

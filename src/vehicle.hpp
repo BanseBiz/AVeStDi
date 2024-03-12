@@ -23,6 +23,8 @@ class Vehicle
     int setAcceleration(double, double, double, time_t);
     int setAngularAcceleration(double, double, double, time_t);
 
+    int setConfPerimeter(double);
+
     std::array<double,3> getPosition() const;
     std::array<double,3> getOrientation() const;
     std::array<double,3> getVelocity() const;
@@ -33,7 +35,7 @@ class Vehicle
     int toCString(char*,size_t) const;
     int toCString(char*,size_t,Vehicle&,time_t) const;
     boost::uuids::uuid getUUID() const;
-    double getSearchPerimeter() const;
+    double getPerimeter() const;
     time_t getRecentUpdate() const;
 
     private:
@@ -46,7 +48,7 @@ class Vehicle
     double _rotation[3] = {0.0,0.0,0.0};             // radians / second
     double _acceleration[3] = {0.0,0.0,0.0};         // meters per square second
     double _angular_acceleration[3] = {0.0,0.0,0.0}; // radians per square second
-    double _search_perimeter = 0.0;                    // distance in meters the av gets
+    double _perimeter = 0.0;                         // distance in meters the av gets
                                                      //   notified about ather avs
 
     time_t _recent_update[7] = {0L,0L,0L,0L,0L,0L,0L};
