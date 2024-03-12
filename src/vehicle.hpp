@@ -49,5 +49,5 @@ class Vehicle
     double _search_perimeter = 0.0;                    // distance in meters the av gets
                                                      //   notified about ather avs
 
-    time_t _recent_update[6];
+    time_t _recent_update[6] = {0L,0L,0L,0L,0L,0L};
 };
