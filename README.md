@@ -93,3 +93,9 @@ Answer:
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
     "timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]",
     distance":299.6184,"direction":42.0924}]
+
+## json Parameters: ##
+| Key    | Data-Format | Mandatory |
+|--------|-------------|-----------|
+| type   | String      | [x]       |
+| sensor | String      | [x]       |
