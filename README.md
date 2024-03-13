@@ -100,16 +100,20 @@ Answer:
     distance":299.6184,"direction":42.0924}]
 
 ## json PUT Parameters: ##
-| Key          | Data-Format | Mandatory | Example          | Description          |
-|--------------|-------------|-----------|------------------|----------------------|
-| type         | String      |    [x]    | "ground"         | Type of vehicle      |
-| sensor       | String      |    [x]    | "gps"            | Must be "gps"        |
-| date         | String      |    [x]    | "20240101"       | YYYYMMDD             |
-| time         | String      |    [x]    | "235959001"      | HHMMSSMMM(illisecs)  |
-| position     | Float-Array |    [o]    | [53.11,8.18,8.4] | abs [LAT,LON,ALT]    |
-| std_dev      | Float-Array |    [o]    | [0.22,0.34,1.5]  | abs [LAT,LON,ALT]    |
-| velocity     | Float-Array |    [o]    | [0.6,0.01,0.0]   | local [X,Y,Z]        |
-| orientation  | Float-Array |    [o]    | [0.6,0.01,0.0]   | abs [YAW,PITCH,ROLL] |
-| rotation     | Float-Array |    [o]    | [11.3,0.0,0.0]   | [YAW,PITCH,ROLL]     |
-| acceleration | Float-Array |    [o]    | [0.1,-0.001,0.0] | [X,Y,Z]              |
-| ang_accel    | Float-Array |    [o]    | [-1.6,0.0,0.0]   | [YAW,PITCH,ROLL]     |
+| Key          | Data-Format | Mandatory | Example          | Description                           |
+|--------------|-------------|-----------|------------------|---------------------------------------|
+| type         | String      |    [x]    | "ground"         | Type of vehicle                       |
+| sensor       | String      |    [x]    | "gps"            | Must be "gps"                         |
+| date         | String      |    [x]    | "20240101"       | YYYYMMDD                              |
+| time         | String      |    [x]    | "235959001"      | HHMMSSMMM(illisecs)                   |
+| position     | Float-Array |    [o]    | [53.11,8.18,8.4] | absolute position [LAT,LON,ALT]       |
+| std_dev      | Float-Array |    [o]    | [0.22,0.34,1.5]  | standard deviation of [LAT,LON,ALT]   |
+| velocity     | Float-Array |    [o]    | [0.6,0.01,0.0]   | local velocity [X,Y,Z]                |
+| orientation  | Float-Array |    [o]    | [0.6,0.01,0.0]   | absolute orientation [YAW,PITCH,ROLL] |
+| rotation     | Float-Array |    [o]    | [11.3,0.0,0.0]   | angular velocity [YAW,PITCH,ROLL]     |
+| acceleration | Float-Array |    [o]    | [0.1,-0.001,0.0] | linear acceleration [X,Y,Z]           |
+| ang_accel    | Float-Array |    [o]    | [-1.6,0.0,0.0]   | angular acceleration [YAW,PITCH,ROLL] |
+| perimeter    | Float       |    [o]    | 2000.3           | max distance in metre of returned AVs |
+| max_age      | Float       |    [o]    | 60               | max age in seconds of returned AVs    |
+
+Unknows parameters are simply ingnored by AVeStDi.
