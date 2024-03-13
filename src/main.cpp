@@ -118,7 +118,7 @@ int main(int argc , char *argv[]) {
         });
     });
 
-    char helo_msg[] = "HELO - AVeStDi daemon"; //AutonomousVehicleStatusDistributer
+    char helo_msg[] = "HELO - AVeStDi daemon\r\n"; //AutonomousVehicleStatusDistributer
     TcpSocket tsck(TCP_PORT, helo_msg);
     tsck.init();
     tsck.addCmd("VERS", CmdHandler::vers);
