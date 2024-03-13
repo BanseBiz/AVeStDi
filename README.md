@@ -99,7 +99,7 @@ Answer:
     "timestamp":"105709519204104",position":[53.11734130,8.18872230,8.400]",
     distance":299.6184,"direction":42.0924}]
 
-## json Parameters: ##
+## json PUT Parameters: ##
 | Key          | Data-Format | Mandatory | Example          | Description          |
 |--------------|-------------|-----------|------------------|----------------------|
 | type         | String      |    [x]    | "ground"         | Type of vehicle      |
