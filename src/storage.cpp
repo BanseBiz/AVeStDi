@@ -59,7 +59,11 @@ int Storage::toCString(char* out, size_t max, Vehicle& reference) const {
         if (idx >= max-2) return -1;
         out[idx++] = ',';
     }
-    out[idx-1] = ']';
+    if (idx == 1) {
+        out[idx++] = ']';
+    } else {
+        out[idx-1] = ']';
+    }
     out[idx++] = '\0';
     return idx;
 }
