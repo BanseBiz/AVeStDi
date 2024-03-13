@@ -90,6 +90,8 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
 
     boost::optional<double> j_perimeter = pt.get_optional<double>("perimeter");
     if (j_perimeter) av.setConfPerimeter(j_perimeter.get());
+    boost::optional<time_t> j_max_age = pt.get_optional<time_t>("max_age");
+    if (j_max_age) av.setConfMaxAge(j_max_age.get());
 
     return av;
 }

@@ -53,7 +53,7 @@ int Storage::toCString(char* out, size_t max, Vehicle& reference) const {
     int inkr;
     for (auto const& av : _nodes){
         if (av.first == reference.getUUID()) continue;
-        inkr = av.second.toCString(out + idx, max - idx, reference, _max_age);
+        inkr = av.second.toCString(out + idx, max - idx, reference);
         if (inkr <= 0) continue;
         idx += inkr;
         if (idx >= max-2) return -1;

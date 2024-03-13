@@ -85,6 +85,11 @@ int Vehicle::setConfPerimeter(double perimeter) {
     return 0;
 }
 
+int Vehicle::setConfMaxAge(time_t max_age) {
+    _max_age = max_age;
+    return 0;
+}
+
 std::array<double,3> Vehicle::getPosition() const {
     std::array<double,3> pos = {_position[LAT], _position[LON], _position[ALT]};
     return pos;
@@ -161,6 +166,10 @@ double Vehicle::getPerimeter() const {
     return _perimeter;
 }
 
+time_t Vehicle::getMaxAge() const {
+    return _max_age;
+}
+
 time_t Vehicle::getRecentUpdate() const {
     return _recent_update[0];
 }
@@ -171,54 +180,60 @@ int Vehicle::toCString(char* out, size_t max) const {
         "{\"type\":\"ground\","
         "\"uuid\":\"%s\","
         "\"timestamp\":\"%lu\"",
-        s_uuid.c_str(), _recent_update
+        s_uuid.c_str(), getRecentUpdate()
     );
     if (_recent_update[0] > 0L) {
         idx += snprintf(out+idx, max-idx,
-            "\",position\":[%.8f,%.8f,%.3f]",
+            ",\"position\":[%.8f,%.8f,%.3f]",
             _position[LAT], _position[LON], _position[ALT]
         );
     }
     if (_recent_update[6] > 0L) {
         idx += snprintf(out+idx, max-idx,
-            "\",std_dev\":[%.2f,%.2f,%.2f]",
+            ",\"std_dev\":[%.2f,%.2f,%.2f]",
             _pos_std_dev[LAT], _pos_std_dev[LON], _pos_std_dev[ALT]
         );
     }
     if (_recent_update[1] > 0L) {
         idx += snprintf(out+idx, max-idx,
-            "\",orientation\":[%.4f,%.4f,%.4f]",
+            ",\"orientation\":[%.4f,%.4f,%.4f]",
             _orientation[YAW], _orientation[PITCH], _orientation[ROLL]
         );
     }
     if (_recent_update[2] > 0L) {
         idx += snprintf(out+idx, max-idx,
-            "\",velocity\":[%.4f,%.4f,%.4f]",
+            ",\"velocity\":[%.4f,%.4f,%.4f]",
             _velocity[X], _velocity[Y], _velocity[Z]
         );
     }
     if (_recent_update[3] > 0L) {
         idx += snprintf(out+idx, max-idx,
-            "\",rotation\":[%.4f,%.4f,%.4f]",
+            ",\"rotation\":[%.4f,%.4f,%.4f]",
             _rotation[YAW], _rotation[PITCH], _rotation[ROLL]
         );
     }
     if (_recent_update[4] > 0L) {
         idx += snprintf(out+idx, max-idx,
-            "\",acceleration\":[%.4f,%.4f,%.4f]",
+            ",\"acceleration\":[%.4f,%.4f,%.4f]",
             _acceleration[X], _acceleration[Y], _acceleration[Z]
         );
     }
     if (_recent_update[5] > 0L) {
         idx += snprintf(out+idx, max-idx,
-            "\",ang_accel\":[%.4f,%.4f,%.4f]",
+            ",\"ang_accel\":[%.4f,%.4f,%.4f]",
             _angular_acceleration[YAW], _angular_acceleration[PITCH], _angular_acceleration[ROLL]
         );
     }
     if (_perimeter > 0.0) {
         idx += snprintf(out+idx, max-idx,
-            "\",perimeter\":%.4f",
+            ",\"perimeter\":%.4f",
             _perimeter
+        );
+    }
+    if (_max_age > 0L) {
+        idx += snprintf(out+idx, max-idx,
+            ",\"max_age\":%ld",
+            _max_age
         );
     }
     idx += snprintf(out+idx, max-idx,
@@ -227,8 +242,8 @@ int Vehicle::toCString(char* out, size_t max) const {
     return idx;
 }
 
-int Vehicle::toCString(char* out, size_t max, Vehicle& reference, time_t max_age) const {
-    if ((max_age > 0) && ((getRecentUpdate() + max_age) < reference.getRecentUpdate())) {
+int Vehicle::toCString(char* out, size_t max, Vehicle& reference) const {
+    if ((_max_age > 0) && ((getRecentUpdate() + (_max_age*1000)) < reference.getRecentUpdate())) {
         return 0;
     }
     

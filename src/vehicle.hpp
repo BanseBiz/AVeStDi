@@ -39,6 +39,7 @@ class Vehicle
     int setAngularAcceleration(double, double, double, time_t);
 
     int setConfPerimeter(double);
+    int setConfMaxAge(time_t);
 
     std::array<double,3> getPosition() const;
     std::array<double,3> getOrientation() const;
@@ -48,9 +49,10 @@ class Vehicle
     std::array<double,3> getAngularAcceleration() const;
     std::string toString() const;
     int toCString(char*,size_t) const;
-    int toCString(char*,size_t,Vehicle&,time_t) const;
+    int toCString(char*,size_t,Vehicle&) const;
     boost::uuids::uuid getUUID() const;
     double getPerimeter() const;
+    time_t getMaxAge() const;
     time_t getRecentUpdate() const;
 
     private:
@@ -63,8 +65,8 @@ class Vehicle
     double _rotation[3] = {0.0,0.0,0.0};             // radians / second
     double _acceleration[3] = {0.0,0.0,0.0};         // meters per square second
     double _angular_acceleration[3] = {0.0,0.0,0.0}; // radians per square second
-    double _perimeter = 0.0;                         // distance in meters the av gets
-                                                     //   notified about ather avs
+    double _perimeter = 0.0;                         // distance in meters the av gets notified about ather avs
+    time_t _max_age = 0L;                            // maximal age of AVs the av wants to be notified about
 
     time_t _recent_update[7] = {0L,0L,0L,0L,0L,0L,0L};
 };

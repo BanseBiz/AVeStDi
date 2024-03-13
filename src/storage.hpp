@@ -23,7 +23,6 @@ class Storage
 {
 private:
     std::map<boost::uuids::uuid,Vehicle> _nodes;
-    time_t _max_age = 0;
 
 public:
     Storage(/* args */);
