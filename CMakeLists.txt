@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14.0 FATAL_ERROR)
-project(av-data-distributer VERSION 0.1.0 LANGUAGES C CXX)
+project(avestdi VERSION 0.1.1 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 23)
 set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
@@ -15,11 +15,8 @@ enable_testing()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/lib/CMakeLists.txt)
 
-add_executable(av-data-distributer src/main.cpp src/vehicle.cpp src/movement.cpp src/tcpSocket.cpp src/storage.cpp src/cmdHandler.cpp)
-target_link_libraries(av-data-distributer uWebSockets ${GeographicLib_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES})
-
-add_executable(av-data-client src/client.cpp src/vehicle.cpp src/movement.cpp)
-target_link_libraries(av-data-client uWebSockets ${GeographicLib_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES})
+add_executable(avestdi src/main.cpp src/vehicle.cpp src/movement.cpp src/tcpSocket.cpp src/storage.cpp src/cmdHandler.cpp)
+target_link_libraries(avestdi uWebSockets ${GeographicLib_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

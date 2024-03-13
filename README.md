@@ -1,4 +1,8 @@
 # Autonomous Vehicle Status Distributer (AVeStDi) #
+The AVeStDi daemon receives positional data from sensors like gps-receivers which are typically attached to an autonmous vehicle (AV). It stores the most recent data, informs AVs about other nearby vehicles and provides relational data like distance and direction.
+Every AV is identified by an uuid.
+__Important: AVeStDi is only ment for experimental purposes. Central security features like authentification, signatures and encryption are missing.__
+
 ## TCP-Socket on 6156: ##
 Connect via telnet 127.0.0.1 6156
 
@@ -16,11 +20,11 @@ Answer:
 Answer:
 
     [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001",
-    "timestamp":"105709519199112"",position":[53.11933910,8.19172210,8.400]},
+    "timestamp":"105709519199112",position":[53.11933910,8.19172210,8.400]},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
-    "timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]},
+    "timestamp":"105709519203016",position":[53.11562820,8.19115920,8.400]},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
-    "timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]}]
+    "timestamp":"105709519204104",position":[53.11734130,8.18872230,8.400]}]
 
 #### PUTS {json string}: pushes a given json string to publish or updates AV ####
 Request:
@@ -39,10 +43,10 @@ Request:
 Answer:
 
     [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
-    "timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]",
+    "timestamp":"105709519203016",position":[53.11562820,8.19115920,8.400]",
     distance":414.6966,"direction":5.2142},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
-    "timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]",
+    "timestamp":"105709519204104",position":[53.11734130,8.18872230,8.400]",
     distance":299.6184,"direction":42.0924}]
       
 ## WEB-Socket on 8096: ##
@@ -73,11 +77,11 @@ Request:
 Answer:
 
     [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001",
-    "timestamp":"105709519199112"",position":[53.11933910,8.19172210,8.400]},
+    "timestamp":"105709519199112",position":[53.11933910,8.19172210,8.400]},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
-    "timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]},
+    "timestamp":"105709519203016",position":[53.11562820,8.19115920,8.400]},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
-    "timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]}]
+    "timestamp":"105709519204104",position":[53.11734130,8.18872230,8.400]}]
 
 
 #### PUT <json string> on /list: like PUT on /*, but server answers with json array of all known AVs, including distance and direction towards the pushed AV ####
@@ -88,10 +92,10 @@ Request:
 Answer:
 
     [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
-    "timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]",
+    "timestamp":"105709519203016",position":[53.11562820,8.19115920,8.400]",
     distance":414.6966,"direction":5.2142},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
-    "timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]",
+    "timestamp":"105709519204104",position":[53.11734130,8.18872230,8.400]",
     distance":299.6184,"direction":42.0924}]
 
 ## json Parameters: ##
