@@ -95,7 +95,16 @@ Answer:
     distance":299.6184,"direction":42.0924}]
 
 ## json Parameters: ##
-| Key    | Data-Format | Mandatory |
-|--------|-------------|-----------|
-| type   | String      | [x]       |
-| sensor | String      | [x]       |
+| Key          | Data-Format | Mandatory | Example          | Description          |
+|--------------|-------------|-----------|------------------|----------------------|
+| type         | String      |    [x]    | "ground"         | Type of vehicle      |
+| sensor       | String      |    [x]    | "gps"            | Must be "gps"        |
+| date         | String      |    [x]    | "20240101"       | YYYYMMDD             |
+| time         | String      |    [x]    | "235959001"      | HHMMSSMMM(illisecs)  |
+| position     | Float-Array |    [o]    | [53.11,8.18,8.4] | abs [LAT,LON,ALT]    |
+| std_dev      | Float-Array |    [o]    | [0.22,0.34,1.5]  | abs [LAT,LON,ALT]    |
+| velocity     | Float-Array |    [o]    | [0.6,0.01,0.0]   | local [X,Y,Z]        |
+| orientation  | Float-Array |    [o]    | [0.6,0.01,0.0]   | abs [YAW,PITCH,ROLL] |
+| rotation     | Float-Array |    [o]    | [11.3,0.0,0.0]   | [YAW,PITCH,ROLL]     |
+| acceleration | Float-Array |    [o]    | [0.1,-0.001,0.0] | [X,Y,Z]              |
+| ang_accel    | Float-Array |    [o]    | [-1.6,0.0,0.0]   | [YAW,PITCH,ROLL]     |
