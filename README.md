@@ -15,9 +15,14 @@ Answer:
 #### LIST: returns json array of all known AVs #####
 Answer:
 
-    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","timestamp":"105709519199112"",position":[53.11933910,8.19172210,8.400]},{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002","timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]},{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003","timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]}]
+    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001",
+    "timestamp":"105709519199112"",position":[53.11933910,8.19172210,8.400]},
+    {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
+    "timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]},
+    {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
+    "timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]}]
 
-#### PUTS {json string}: pushes a given json string to publish or update AV ####
+#### PUTS {json string}: pushes a given json string to publish or updates AV ####
 Request:
 
     PUTS {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391, 8.1917221,8.4]}
@@ -33,7 +38,12 @@ Request:
 
 Answer:
 
-    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002","timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]",distance":414.6966,"direction":5.2142},{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003","timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]",distance":299.6184,"direction":42.0924}]
+    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
+    "timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]",
+    distance":414.6966,"direction":5.2142},
+    {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
+    "timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]",
+    distance":299.6184,"direction":42.0924}]
       
 ## WEB-Socket on 8096: ##
 
@@ -62,7 +72,12 @@ Request:
 
 Answer:
 
-    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","timestamp":"105709519199112"",position":[53.11933910,8.19172210,8.400]},{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002","timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]},{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003","timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]}]
+    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001",
+    "timestamp":"105709519199112"",position":[53.11933910,8.19172210,8.400]},
+    {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
+    "timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]},
+    {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
+    "timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]}]
 
 
 #### PUT <json string> on /list: like PUT on /*, but server answers with json array of all known AVs, including distance and direction towards the pushed AV ####
@@ -72,4 +87,9 @@ Request:
 
 Answer:
 
-    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002","timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]",distance":414.6966,"direction":5.2142},{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003","timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]",distance":299.6184,"direction":42.0924}]
+    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
+    "timestamp":"105709519203016"",position":[53.11562820,8.19115920,8.400]",
+    distance":414.6966,"direction":5.2142},
+    {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
+    "timestamp":"105709519204104"",position":[53.11734130,8.18872230,8.400]",
+    distance":299.6184,"direction":42.0924}]
