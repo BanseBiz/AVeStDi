@@ -116,4 +116,4 @@ Answer:
 | perimeter    | Float       |    [o]    | 2000.3           | max distance in metre of returned AVs |
 | max_age      | Float       |    [o]    | 60               | max age in seconds of returned AVs    |
 
-Unknown parameters are simply ingnored by AVeStDi.
+Unknown parameters are simply ignored by AVeStDi.
