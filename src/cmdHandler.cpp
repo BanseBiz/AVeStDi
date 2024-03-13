@@ -34,6 +34,7 @@ bool handleJsonOptionalArray(boost::property_tree::ptree pt, const boost::proper
     if (json) {
         unsigned int i = 0;
         for (auto& item : json.get()) dest[i++] = item.second.get_value<double>();
+        if (i != 3) throw std::length_error("json array must be of length 3");
         return true;
     }
     return false;
@@ -72,16 +73,19 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
         av.setPosStdDev(array[LAT],array[LON],array[ALT], r_time);
     }
     if (handleJsonOptionalArray(pt, "orientation", array)) {
-        av.setOrientation(array[LAT],array[LON],array[ALT], r_time);
+        av.setOrientation(array[YAW],array[PITCH],array[ROLL], r_time);
+    }
+    if (handleJsonOptionalArray(pt, "velocity", array)) {
+        av.setVelocity(array[X],array[Y],array[Z], r_time);
     }
     if (handleJsonOptionalArray(pt, "rotation", array)) {
-        av.setRotation(array[LAT],array[LON],array[ALT], r_time);
+        av.setRotation(array[YAW],array[PITCH],array[ROLL], r_time);
     }
     if (handleJsonOptionalArray(pt, "acceleration", array)) {
-        av.setRotation(array[LAT],array[LON],array[ALT], r_time);
+        av.setRotation(array[X],array[Y],array[Z], r_time);
     }
     if (handleJsonOptionalArray(pt, "ang_accel", array)) {
-        av.setAngularAcceleration(array[LAT],array[LON],array[ALT], r_time);
+        av.setAngularAcceleration(array[YAW],array[PITCH],array[ROLL], r_time);
     }
 
     boost::optional<double> j_perimeter = pt.get_optional<double>("perimeter");
@@ -104,6 +108,9 @@ int CmdHandler::puts(char* recv, char* send) {
     } catch (const boost::property_tree::json_parser_error& e) {
         std::memcpy(send, "ERR: json format error, cannot parse\r\n", 39);
         return 39;
+    } catch (const std::length_error& e) {
+        std::memcpy(send, "ERR: json array must be of length 3\r\n", 38);
+        return 38;
     }
 }
 

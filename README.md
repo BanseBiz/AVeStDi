@@ -30,7 +30,7 @@ Answer:
 #### PUTS {json string}: pushes a given json string to publish or updates AV ####
 Request:
 
-    PUTS {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391, 8.1917221,8.4]}
+    PUTS {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391,8.1917221,8.4]}
 
 Answer:
 
@@ -39,7 +39,7 @@ Answer:
 #### PUTL {json string}: like PUTS, but server answers with json array of all known AVs, including distance and direction towards the pushed AV ####
 Request: 
 
-    PUTL {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391, 8.1917221,8.4]}
+    PUTL {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391,8.1917221,8.4]}
 
 Answer:
 
@@ -64,7 +64,7 @@ Answer:
 #### PUT <json string> on /*: pushes a given json string to publish or update AV ####
 Request:
 
-     curl -X PUT -H "Content-Type: application/json" -d '{"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391, 8.1917221,8.4]}' http://127.0.0.1:8096
+     curl -X PUT -H "Content-Type: application/json" -d '{"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391,8.1917221,8.4]}' http://127.0.0.1:8096
 
 Answer:
 
