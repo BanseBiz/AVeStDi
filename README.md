@@ -1,7 +1,8 @@
 # Autonomous Vehicle Status Distributer (AVeStDi) #
-The AVeStDi daemon receives positional data from sensors like gps-receivers which are typically attached to an autonmous vehicle (AV). It stores the most recent data, informs AVs about other nearby vehicles and provides relational data like distance and direction.
+The AVeStDi daemon receives positional data from sensors like gps-receivers which are typically attached to an autonomous vehicle (AV). It stores the most recent data, informs AVs about other nearby vehicles and provides relational data like distance and direction.
 Every AV is identified by an uuid.
-__Important: AVeStDi is only ment for experimental purposes. Central security features like authentification, signatures and encryption are missing.__
+
+__Important: AVeStDi is meant only for experimental purposes. Central security features like authentication, signatures, and encryption are missing.__
 
 ## TCP-Socket on 6156: ##
 Connect via telnet 127.0.0.1 6156
