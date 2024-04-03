@@ -127,6 +127,7 @@ If this parameter is used, it must be updated regularly. Vanished AVs have to be
 Otherwise checks for plausibility deliver faulty results.
 
 Example:
+
     PUTS {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391,8.1917221,8.4],"alpha":{"0f389c46-ea13-45e0-b6a7-af282a603002":5.0222,"0f389c46-ea13-45e0-b6a7-af282a603003":41.0032}}
 
     LIST
