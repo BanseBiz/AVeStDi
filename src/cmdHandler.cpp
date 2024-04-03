@@ -77,6 +77,7 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     r_time += j_time.get_value<uint64_t>();
     
     Vehicle& av = _stor.get(uuid);
+    av.alpha.clear();
     double array[3];
 
     if (handleJsonOptionalArray(pt, "position", array)) {
