@@ -128,7 +128,11 @@ Otherwise checks for plausibility deliver faulty results.
 
 Example:
 
-    PUTS {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391,8.1917221,8.4],"alpha":{"0f389c46-ea13-45e0-b6a7-af282a603002":5.0222,"0f389c46-ea13-45e0-b6a7-af282a603003":41.0032}}
+    PUTS {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001",
+    "date":"20220227","time":"014307692",
+    "alpha":{"0f389c46-ea13-45e0-b6a7-af282a603002":5.0222,"0f389c46-ea13-45e0-b6a7-af282a603003":41.0032}}
 
     LIST
-    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","timestamp":"20220227014307692","position":[53.11933910,8.19172210,8.400],"alpha":{"0f389c46-ea13-45e0-b6a7-af282a603002":5.0222,"0f389c46-ea13-45e0-b6a7-af282a603003":41.0032}}]
+    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001",
+    "timestamp":"20220227014307692",
+    "alpha":{"0f389c46-ea13-45e0-b6a7-af282a603002":5.0222,"0f389c46-ea13-45e0-b6a7-af282a603003":41.0032}}]
