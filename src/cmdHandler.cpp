@@ -40,6 +40,19 @@ bool handleJsonOptionalArray(boost::property_tree::ptree pt, const boost::proper
     return false;
 }
 
+bool handleJsonOptionalList(boost::property_tree::ptree pt, const boost::property_tree::path path, std::map<boost::uuids::uuid,double>& dest) {
+    boost::optional<boost::property_tree::ptree &> json = pt.get_child_optional(path);
+    boost::uuids::string_generator uuid_gen;
+    if (json) {
+        for (boost::property_tree::ptree::value_type &elem : pt.get_child(path)) {
+            boost::uuids::uuid uuid = uuid_gen(elem.first);
+            dest[uuid] = elem.second.get_value<double>();
+        }
+        return true;
+    }
+    return false;
+}
+
 Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     std::stringstream ss;
     ss << recv;
@@ -87,6 +100,7 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     if (handleJsonOptionalArray(pt, "ang_accel", array)) {
         av.setAngularAcceleration(array[YAW],array[PITCH],array[ROLL], r_time);
     }
+    handleJsonOptionalList(pt, "alpha", av.alpha);
 
     boost::optional<double> j_perimeter = pt.get_optional<double>("perimeter");
     if (j_perimeter) av.setConfPerimeter(j_perimeter.get());

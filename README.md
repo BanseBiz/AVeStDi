@@ -21,11 +21,11 @@ Answer:
 Answer:
 
     [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001",
-    "timestamp":"105709519199112",position":[53.11933910,8.19172210,8.400]},
+    "timestamp":"105709519199112","position":[53.11933910,8.19172210,8.400]},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
-    "timestamp":"105709519203016",position":[53.11562820,8.19115920,8.400]},
+    "timestamp":"105709519203016","position":[53.11562820,8.19115920,8.400]},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
-    "timestamp":"105709519204104",position":[53.11734130,8.18872230,8.400]}]
+    "timestamp":"105709519204104","position":[53.11734130,8.18872230,8.400]}]
 
 #### PUTS {json string}: pushes a given json string to publish or updates AV ####
 Request:
@@ -44,10 +44,10 @@ Request:
 Answer:
 
     [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
-    "timestamp":"105709519203016",position":[53.11562820,8.19115920,8.400]",
+    "timestamp":"105709519203016","position":[53.11562820,8.19115920,8.400]",
     distance":414.6966,"direction":5.2142},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
-    "timestamp":"105709519204104",position":[53.11734130,8.18872230,8.400]",
+    "timestamp":"105709519204104","position":[53.11734130,8.18872230,8.400]",
     distance":299.6184,"direction":42.0924}]
       
 ## WEB-Socket on 8096: ##
@@ -78,11 +78,11 @@ Request:
 Answer:
 
     [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001",
-    "timestamp":"105709519199112",position":[53.11933910,8.19172210,8.400]},
+    "timestamp":"105709519199112","position":[53.11933910,8.19172210,8.400]},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
-    "timestamp":"105709519203016",position":[53.11562820,8.19115920,8.400]},
+    "timestamp":"105709519203016","position":[53.11562820,8.19115920,8.400]},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
-    "timestamp":"105709519204104",position":[53.11734130,8.18872230,8.400]}]
+    "timestamp":"105709519204104","position":[53.11734130,8.18872230,8.400]}]
 
 
 #### PUT <json string> on /list: like PUT on /*, but server answers with json array of all known AVs, including distance and direction towards the pushed AV ####
@@ -93,10 +93,10 @@ Request:
 Answer:
 
     [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603002",
-    "timestamp":"105709519203016",position":[53.11562820,8.19115920,8.400]",
+    "timestamp":"105709519203016","position":[53.11562820,8.19115920,8.400]",
     distance":414.6966,"direction":5.2142},
     {"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603003",
-    "timestamp":"105709519204104",position":[53.11734130,8.18872230,8.400]",
+    "timestamp":"105709519204104","position":[53.11734130,8.18872230,8.400]",
     distance":299.6184,"direction":42.0924}]
 
 ## json PUT Parameters: ##
@@ -115,5 +115,19 @@ Answer:
 | ang_accel    | Float-Array |    [o]    | [-1.6,0.0,0.0]   | angular acceleration [YAW,PITCH,ROLL] |
 | perimeter    | Float       |    [o]    | 2000.3           | max distance in metre of returned AVs |
 | max_age      | Float       |    [o]    | 60               | max age in seconds of returned AVs    |
+| alpha        | UUID:Double |    [0]    | see below        | holds measured directions towards AVs |
 
 Unknown parameters are simply ignored by AVeStDi.
+
+## The alpha Parameter ##
+To check for plausible positions the AVs can exchange the relative direction they see each other.
+This is done by the alpha parameter, which hold a list of UUIDs of all seen vehicles, mapped to an angle.
+The angle per UUID is the relative direction in which the vehicle of UUID has been seen.
+If this parameter is used, it must be updated regularly. Vanished AVs have to be deleted.
+Otherwise checks for plausibility deliver faulty results.
+
+Example:
+    PUTS {"sensor":"gps","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","date":"20220227","time":"014307692","position":[53.1193391,8.1917221,8.4],"alpha":{"0f389c46-ea13-45e0-b6a7-af282a603002":5.0222,"0f389c46-ea13-45e0-b6a7-af282a603003":41.0032}}
+
+    LIST
+    [{"type":"ground","uuid":"0f389c46-ea13-45e0-b6a7-af282a603001","timestamp":"20220227014307692","position":[53.11933910,8.19172210,8.400],"alpha":{"0f389c46-ea13-45e0-b6a7-af282a603002":5.0222,"0f389c46-ea13-45e0-b6a7-af282a603003":41.0032}}]
