@@ -101,13 +101,15 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     } else if (handleJsonOptionalValue(pt, "course", &value)) {
         av.setOrientation(value,0.0,0.0, r_time);
     }
-    if (handleJsonOptionalArray(pt, "velocity", array)) {
-        try {
+    try {
+        if (handleJsonOptionalArray(pt, "velocity", array)) {
             av.setVelocity(array[X],array[Y],array[Z], r_time);
-        } catch (const std::length_error& e) {
-            if (handleJsonOptionalValue(pt, "velocity", &value)) {
-                av.setVelocity(value,0.0,0.0, r_time);
-            }
+        }
+    } catch (const std::length_error& e) {
+        if (handleJsonOptionalValue(pt, "velocity", &value)) {
+            av.setVelocity(value,0.0,0.0, r_time);
+        } else {
+            throw e;
         }
     }
     if (handleJsonOptionalArray(pt, "rotation", array)) {
@@ -138,7 +140,7 @@ int CmdHandler::puts(char* recv, char* send) {
         std::memcpy(send, "ERR: no gps data found in json string\r\n", 40);
         return 40;
     } catch (const boost::property_tree::ptree_bad_data& e) {
-        std::memcpy(send, "ERR: incomplete gps data in json string\r\n", 42);
+        std::memcpy(send, "ERR: bad data in json string\r\n", 31);
         return 42;
     } catch (const boost::property_tree::json_parser_error& e) {
         std::memcpy(send, "ERR: json format error, cannot parse\r\n", 39);
@@ -160,10 +162,13 @@ int CmdHandler::putl(char* recv, char* send) {
         }
     } catch (const std::invalid_argument& e) {
         std::memcpy(send, "ERR: no gps data found in json string\r\n", 40);
+        return 40;
     } catch (const boost::property_tree::ptree_bad_data& e) {
         std::memcpy(send, "ERR: incomplete gps data in json string\r\n", 42);
+        return 42;
     } catch (const boost::property_tree::json_parser_error& e) {
         std::memcpy(send, "ERR: json format error, cannot parse\r\n", 39);
+        return 39;
     } catch (const std::length_error& e) {
         std::memcpy(send, "ERR: json array must be of length 3\r\n", 38);
         return 38;
