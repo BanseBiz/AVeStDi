@@ -29,6 +29,15 @@ int CmdHandler::quit(char*, char* send) {
     return -2;
 }
 
+bool handleJsonOptionalValue(boost::property_tree::ptree pt, const boost::property_tree::path path, double* dest) {
+    boost::optional<boost::property_tree::ptree &> json = pt.get_child_optional(path);
+    if (json) {
+        *dest = json.get().get_value<double>();
+        return true;
+    }
+    return false;
+}
+
 bool handleJsonOptionalArray(boost::property_tree::ptree pt, const boost::property_tree::path path, double* dest) {
     boost::optional<boost::property_tree::ptree &> json = pt.get_child_optional(path);
     if (json) {
@@ -79,6 +88,7 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     Vehicle& av = _stor.get(uuid);
     av.alpha.clear();
     double array[3];
+    double value;
 
     if (handleJsonOptionalArray(pt, "position", array)) {
         av.setPosition(array[LAT],array[LON],array[ALT], r_time);
@@ -88,9 +98,17 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     }
     if (handleJsonOptionalArray(pt, "orientation", array)) {
         av.setOrientation(array[YAW],array[PITCH],array[ROLL], r_time);
+    } else if (handleJsonOptionalValue(pt, "course", &value)) {
+        av.setOrientation(value,0.0,0.0, r_time);
     }
     if (handleJsonOptionalArray(pt, "velocity", array)) {
-        av.setVelocity(array[X],array[Y],array[Z], r_time);
+        try {
+            av.setVelocity(array[X],array[Y],array[Z], r_time);
+        } catch (const std::length_error& e) {
+            if (handleJsonOptionalValue(pt, "velocity", &value)) {
+                av.setVelocity(value,0.0,0.0, r_time);
+            }
+        }
     }
     if (handleJsonOptionalArray(pt, "rotation", array)) {
         av.setRotation(array[YAW],array[PITCH],array[ROLL], r_time);
