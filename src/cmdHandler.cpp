@@ -146,6 +146,9 @@ int CmdHandler::putl(char* recv, char* send) {
         std::memcpy(send, "ERR: incomplete gps data in json string\r\n", 42);
     } catch (const boost::property_tree::json_parser_error& e) {
         std::memcpy(send, "ERR: json format error, cannot parse\r\n", 39);
+    } catch (const std::length_error& e) {
+        std::memcpy(send, "ERR: json array must be of length 3\r\n", 38);
+        return 38;
     }
 
     std::memcpy(send, "ERR: send buffer overflow\r\n", 28);
