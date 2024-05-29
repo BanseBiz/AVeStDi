@@ -90,6 +90,7 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     double array[3];
     double value;
 
+    av.aquireWrite();
     if (handleJsonOptionalArray(pt, "position", array)) {
         av.setPosition(array[LAT],array[LON],array[ALT], r_time);
     }
@@ -127,6 +128,7 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     if (j_perimeter) av.setConfPerimeter(j_perimeter.get());
     boost::optional<time_t> j_max_age = pt.get_optional<time_t>("max_age");
     if (j_max_age) av.setConfMaxAge(j_max_age.get());
+    av.aquireWrite();
 
     return av;
 }

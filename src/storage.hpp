@@ -31,8 +31,8 @@ public:
     int put(boost::uuids::uuid, double, double, double, time_t);
     Vehicle& get(boost::uuids::uuid);
     bool contains(boost::uuids::uuid);
-    int toCString(char*,size_t) const;
-    int toCString(char*,size_t,Vehicle&) const;
+    int toCString(char*,size_t);
+    int toCString(char*,size_t,Vehicle&);
     bool empty() const noexcept;
     void setMaxAge(time_t);
 };
