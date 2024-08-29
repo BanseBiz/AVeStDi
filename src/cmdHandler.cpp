@@ -91,6 +91,9 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     double value;
 
     av.aquireWrite();
+
+    av.setUUID(uuid);
+
     if (handleJsonOptionalArray(pt, "position", array)) {
         av.setPosition(array[LAT],array[LON],array[ALT], r_time);
     }
