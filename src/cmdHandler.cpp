@@ -2,6 +2,7 @@
 #include "tcpSocket.h"
 
 #include <cstring>
+#include <ctime>
 #include <string>
 #include <iostream>
 #include <stdexcept>
@@ -62,6 +63,18 @@ bool handleJsonOptionalList(boost::property_tree::ptree pt, const boost::propert
     return false;
 }
 
+uint64_t getServerDate() {
+    std::time_t rawtime;
+    std::tm* timeinfo;
+    char buffer [10];
+
+    std::time(&rawtime);
+    timeinfo = std::localtime(&rawtime);
+
+    std::strftime(buffer,10,"%Y%m%d",timeinfo);
+    return (uint64_t)std::stoi(buffer);
+}
+
 Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     std::stringstream ss;
     ss << recv;
@@ -82,6 +95,9 @@ Vehicle& CmdHandler::updateAVbyJson(char* recv) {
     boost::property_tree::ptree j_date = pt.get_child("date");
     boost::property_tree::ptree j_time = pt.get_child("time");
     uint64_t r_time = j_date.get_value<uint64_t>();
+    if (r_time == 0UL) {
+        r_time = getServerDate();
+    }
     r_time *= 1000000000;
     r_time += j_time.get_value<uint64_t>();
     
